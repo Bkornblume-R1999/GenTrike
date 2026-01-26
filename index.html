@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GenSan Fare Calculator</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css">
+</head>
+<body>
+  <header class="app-header">
+    <span class="title">🚖 GenSan Fare</span>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="trike">Trike</button>
+    <button class="tab" data-tab="busjeep">Bus/Jeep</button>
+    <button class="tab" data-tab="about">About</button>
+  </nav>
+
+  <main class="app-main">
+    <div id="map"></div>
+
+    <div class="panel">
+      <details id="panel-trike" open>
+  <summary>Trike</summary>
+  <div class="panel-content">
+    <label for="search-start"><strong>Point A:</strong></label>
+    <input type="text" id="search-start" placeholder="Search start location">
+
+    <label for="search-end"><strong>Point B:</strong></label>
+    <input type="text" id="search-end" placeholder="Search destination">
+
+    <p><strong>Start:</strong> <span id="start-coord">Tap map or search</span></p>
+    <p><strong>End:</strong> <span id="end-coord">Tap map or search</span></p>
+    <p><strong>Distance:</strong> <span id="distance">—</span> km</p>
+    <p><strong>Fare:</strong> <span id="fare">—</span></p>
+    <div class="actions">
+      <button class="btn" id="reset-trike">Reset</button>
+      <button class="btn" id="swap-trike">Swap</button>
+      <button class="btn secondary" id="use-location">📍 Current Location</button>
+    </div>
+  </div>
+</details>
+
+      <details id="panel-busjeep">
+        <summary>Bus/Jeep</summary>
+        <div class="panel-content">
+          <label for="route-picker">Select Route:</label>
+          <select id="route-picker">
+            <option value="">— Choose —</option>
+            <option value="uhaw">Uhaw</option>
+            <option value="kanto-uhaw">Kanto Uhaw</option>
+          </select>
+          <p><strong>Fare:</strong> <span id="bus-fare">₱20</span></p>
+        </div>
+      </details>
+
+      <details id="panel-about">
+        <summary>About</summary>
+        <div class="panel-content">
+          <p>Calculate trike fares and view jeep/bus routes in General Santos City.</p>
+        </div>
+      </details>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
