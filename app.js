@@ -62,9 +62,83 @@ const ROUTES = {
   }
 };
 
+// ==================== PANEL DRAG FUNCTIONALITY ====================
+
+function initPanelDrag() {
+  const panel = document.getElementById('control-panel');
+  const handle = document.querySelector('.panel-handle');
+  
+  if (!handle || window.innerWidth >= 1024) return; // Only on mobile
+  
+  let startY = 0;
+  let currentY = 0;
+  let isDragging = false;
+  
+  const handleStart = (e) => {
+    const touch = e.type === 'touchstart' ? e.touches[0] : e;
+    startY = touch.clientY;
+    isDragging = true;
+    panel.style.transition = 'none';
+  };
+  
+  const handleMove = (e) => {
+    if (!isDragging) return;
+    
+    const touch = e.type === 'touchmove' ? e.touches[0] : e;
+    currentY = touch.clientY;
+    const deltaY = currentY - startY;
+    
+    // Only allow downward drag to minimize
+    if (deltaY > 0 && !panel.classList.contains('minimized')) {
+      panel.style.transform = `translateY(${deltaY}px)`;
+    }
+    // Only allow upward drag to expand
+    else if (deltaY < 0 && panel.classList.contains('minimized')) {
+      panel.style.transform = `translateY(calc(100% - 60px + ${deltaY}px))`;
+    }
+  };
+  
+  const handleEnd = () => {
+    if (!isDragging) return;
+    isDragging = false;
+    panel.style.transition = '';
+    panel.style.transform = '';
+    
+    const deltaY = currentY - startY;
+    
+    // If dragged more than 50px, toggle state
+    if (Math.abs(deltaY) > 50) {
+      if (deltaY > 0) {
+        // Dragged down - minimize
+        panel.classList.add('minimized');
+      } else {
+        // Dragged up - expand
+        panel.classList.remove('minimized');
+      }
+    }
+  };
+  
+  // Touch events
+  handle.addEventListener('touchstart', handleStart, { passive: true });
+  document.addEventListener('touchmove', handleMove, { passive: true });
+  document.addEventListener('touchend', handleEnd);
+  
+  // Mouse events (for testing on desktop)
+  handle.addEventListener('mousedown', handleStart);
+  document.addEventListener('mousemove', handleMove);
+  document.addEventListener('mouseup', handleEnd);
+  
+  // Also toggle on click/tap
+  handle.addEventListener('click', (e) => {
+    if (e.detail === 1) { // Single click only
+      panel.classList.toggle('minimized');
+    }
+  });
+}
+
 // ==================== UTILITIES ====================
 
-function showToast(message, duration = 3000) {
+function showToast(message, duration = 2000) {
   const toast = document.getElementById('toast');
   toast.textContent = message;
   toast.classList.add('show');
@@ -561,6 +635,7 @@ function initEventListeners() {
 function init() {
   initMap();
   initEventListeners();
+  initPanelDrag();
   
   setTimeout(() => {
     showToast('👋 Welcome to GenSan Fare!', 3000);
