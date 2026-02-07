@@ -2,72 +2,248 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GenSan Fare Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>GenSan Fare • Smart Transport Calculator</title>
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header class="app-header">
-    <span class="title">🚖 GenSan Fare</span>
+  <!-- Full-screen map container -->
+  <div id="map" role="application" aria-label="Interactive transport map"></div>
+
+  <!-- Floating header -->
+  <header class="floating-header">
+    <div class="logo">
+      <span class="logo-icon">🚖</span>
+      <div class="logo-text">
+        <h1>GenSan Fare</h1>
+        <p>Transport Calculator</p>
+      </div>
+    </div>
   </header>
 
-  <nav class="tabs">
-    <button class="tab active" data-tab="trike">Trike</button>
-    <button class="tab" data-tab="busjeep">Bus/Jeep</button>
-    <button class="tab" data-tab="about">About</button>
+  <!-- Mode switcher - floating tabs -->
+  <nav class="mode-switcher" role="tablist">
+    <button class="mode-btn active" data-mode="trike" role="tab" aria-selected="true">
+      <span class="mode-icon">🛺</span>
+      <span class="mode-label">Trike</span>
+    </button>
+    <button class="mode-btn" data-mode="busjeep" role="tab" aria-selected="false">
+      <span class="mode-icon">🚌</span>
+      <span class="mode-label">Bus/Jeep</span>
+    </button>
+    <button class="mode-btn" data-mode="info" role="tab" aria-selected="false">
+      <span class="mode-icon">ℹ️</span>
+      <span class="mode-label">Info</span>
+    </button>
   </nav>
 
-  <main class="app-main">
-    <div id="map"></div>
-
-    <div class="panel">
-      <details id="panel-trike" open>
-  <summary>Trike</summary>
-  <div class="panel-content">
-    <label for="search-start"><strong>Point A:</strong></label>
-    <input type="text" id="search-start" placeholder="Search start location">
-
-    <label for="search-end"><strong>Point B:</strong></label>
-    <input type="text" id="search-end" placeholder="Search destination">
-
-    <p><strong>Start:</strong> <span id="start-coord">Tap map or search</span></p>
-    <p><strong>End:</strong> <span id="end-coord">Tap map or search</span></p>
-    <p><strong>Distance:</strong> <span id="distance">—</span> km</p>
-    <p><strong>Fare:</strong> <span id="fare">—</span></p>
-    <div class="actions">
-      <button class="btn" id="reset-trike">Reset</button>
-      <button class="btn secondary" id="use-location">📍 Current Location</button>
+  <!-- Bottom sheet / Sidebar (adaptive) -->
+  <aside class="control-panel" id="control-panel">
+    <!-- Drag handle for mobile -->
+    <div class="panel-handle">
+      <div class="handle-bar"></div>
     </div>
+
+    <!-- TRIKE MODE -->
+    <div class="panel-view active" data-view="trike">
+      <div class="panel-header">
+        <h2 class="panel-title">Trike Fare Calculator</h2>
+      </div>
+
+      <div class="panel-content">
+        <!-- Quick actions -->
+        <div class="quick-actions">
+          <button class="action-card" id="use-location">
+            <span class="action-icon">📍</span>
+            <span class="action-text">My Location</span>
+          </button>
+          <button class="action-card" id="reset-trike">
+            <span class="action-icon">🔄</span>
+            <span class="action-text">Reset</span>
+          </button>
+        </div>
+
+        <!-- Location inputs -->
+        <div class="location-input-group">
+          <div class="input-wrapper">
+            <div class="input-icon start-icon">A</div>
+            <div class="input-content">
+              <input 
+                type="text" 
+                id="search-start" 
+                class="location-input"
+                placeholder="Starting point..."
+                autocomplete="off"
+              >
+              <span class="input-label" id="start-display">Tap map or search</span>
+            </div>
+          </div>
+
+          <div class="connection-line"></div>
+
+          <div class="input-wrapper">
+            <div class="input-icon end-icon">B</div>
+            <div class="input-content">
+              <input 
+                type="text" 
+                id="search-end" 
+                class="location-input"
+                placeholder="Destination..."
+                autocomplete="off"
+              >
+              <span class="input-label" id="end-display">Tap map or search</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trip summary -->
+        <div class="trip-summary" id="trip-summary">
+          <div class="summary-row">
+            <span class="summary-label">Distance</span>
+            <span class="summary-value" id="distance-display">—</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="fare-display-main">
+            <span class="fare-label">Estimated Fare</span>
+            <span class="fare-amount" id="fare-display">₱—</span>
+          </div>
+          <div class="fare-formula">
+            ₱15 base (4km) + ₱1/km
+          </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instruction-card">
+          <p>💡 Tap any two points on the map to calculate fare</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUS/JEEP MODE -->
+    <div class="panel-view" data-view="busjeep">
+      <div class="panel-header">
+        <h2 class="panel-title">Bus & Jeep Routes</h2>
+      </div>
+
+      <div class="panel-content">
+        <div class="route-grid">
+          <button class="route-card" data-route="uhaw">
+            <div class="route-badge green">🟢</div>
+            <div class="route-info">
+              <h3 class="route-name">Uhaw Route</h3>
+              <p class="route-stops">12 stops • Airport to Robinsons</p>
+            </div>
+            <div class="route-fare">₱20</div>
+          </button>
+
+          <button class="route-card" data-route="kanto-uhaw">
+            <div class="route-badge yellow">🟡</div>
+            <div class="route-info">
+              <h3 class="route-name">Kanto Uhaw Route</h3>
+              <p class="route-stops">8 stops • Lado to Lagao Market</p>
+            </div>
+            <div class="route-fare">₱20</div>
+          </button>
+        </div>
+
+        <div class="route-detail" id="route-detail" style="display: none;">
+          <div class="route-detail-header">
+            <h3 id="route-detail-name"></h3>
+            <button class="btn-text" id="clear-route">Clear</button>
+          </div>
+          <div class="stops-list" id="stops-list"></div>
+        </div>
+
+        <div class="info-box">
+          <strong>Flat Fare:</strong> All bus & jeep rides within GenSan cost ₱20
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO MODE -->
+    <div class="panel-view" data-view="info">
+      <div class="panel-header">
+        <h2 class="panel-title">About</h2>
+      </div>
+
+      <div class="panel-content">
+        <div class="info-section">
+          <h3>What is this?</h3>
+          <p>GenSan Fare helps you plan trips and calculate transportation costs in General Santos City with real-time route mapping.</p>
+        </div>
+
+        <div class="info-section">
+          <h3>Features</h3>
+          <div class="feature-grid">
+            <div class="feature-item">
+              <span class="feature-icon">🛺</span>
+              <div>
+                <strong>Trike Fares</strong>
+                <p>Distance-based pricing</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🚌</span>
+              <div>
+                <strong>Bus Routes</strong>
+                <p>Major route maps</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">📍</span>
+              <div>
+                <strong>Live Location</strong>
+                <p>GPS-based routing</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🗺️</span>
+              <div>
+                <strong>Interactive Map</strong>
+                <p>Tap anywhere to route</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>Fare Guide</h3>
+          <div class="fare-guide">
+            <div class="guide-item">
+              <span class="guide-vehicle">🛺 Trike</span>
+              <span class="guide-price">₱15 + ₱1/km</span>
+            </div>
+            <div class="guide-item">
+              <span class="guide-vehicle">🚌 Bus/Jeep</span>
+              <span class="guide-price">₱20 flat</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="disclaimer">
+          <strong>Note:</strong> Fares are based on GenSan City Ordinance No. 08, Series of 2023. Driver may take different routes which may affect the fare so always confirm with your driver.
+        </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+  <!-- Loading overlay -->
+  <div id="loading" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+    <p>Calculating route...</p>
   </div>
-</details>
-
-      <details id="panel-busjeep">
-        <summary>Bus/Jeep</summary>
-        <div class="panel-content">
-          <label for="route-picker">Select Route:</label>
-          <select id="route-picker">
-            <option value="">— Choose —</option>
-            <option value="uhaw">Uhaw</option>
-            <option value="kanto-uhaw">Kanto Uhaw</option>
-          </select>
-          <p><strong>Fare:</strong> <span id="bus-fare">₱20</span></p>
-        </div>
-      </details>
-
-      <details id="panel-about">
-        <summary>About</summary>
-        <div class="panel-content">
-          <p>Calculate trike fares and view jeep/bus routes in General Santos City.</p>
-        </div>
-      </details>
-    </div>
-  </main>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
   <script type="module" src="app.js"></script>
 </body>
-
 </html>
-
