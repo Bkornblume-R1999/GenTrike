@@ -216,7 +216,7 @@ body {
 /* ==================== MODE SWITCHER ==================== */
 .mode-switcher {
   position: fixed;
-  bottom: calc(85vh + var(--space-4));
+  top: var(--space-20);
   right: var(--space-4);
   left: auto;
   transform: none;
@@ -227,31 +227,18 @@ body {
   border-radius: var(--radius-full);
   padding: var(--space-1);
   box-shadow: var(--shadow-lg);
-  animation: slideInBottom 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  animation: slideInRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 @media (min-width: 640px) {
   .mode-switcher {
     top: var(--space-4);
-    bottom: auto;
-    animation: slideInRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 }
 
 @media (min-width: 1024px) {
   .mode-switcher {
     right: 420px;
-  }
-}
-
-@keyframes slideInBottom {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
