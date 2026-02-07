@@ -217,8 +217,9 @@ body {
 .mode-switcher {
   position: fixed;
   bottom: calc(85vh + var(--space-4));
-  left: 50%;
-  transform: translateX(-50%);
+  right: var(--space-4);
+  left: auto;
+  transform: none;
   z-index: 700;
   display: flex;
   gap: var(--space-2);
@@ -233,9 +234,6 @@ body {
   .mode-switcher {
     top: var(--space-4);
     bottom: auto;
-    left: auto;
-    right: var(--space-4);
-    transform: none;
     animation: slideInRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 }
@@ -249,11 +247,11 @@ body {
 @keyframes slideInBottom {
   from {
     opacity: 0;
-    transform: translateY(50px) translateX(-50%);
+    transform: translateY(50px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) translateX(-50%);
+    transform: translateY(0);
   }
 }
 
