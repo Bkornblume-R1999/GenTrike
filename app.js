@@ -1,20 +1,26 @@
 import { Api } from './api.js';
 
+// Application State
 const state = {
   map: null,
-  startMarker: null,
-  endMarker: null,
-  routeControl: null,
-  activeTab: 'trike',
-  busRouteControl: null,
-  busMarkers: []
+  currentMode: 'trike',
+  trike: {
+    startMarker: null,
+    endMarker: null,
+    routeControl: null
+  },
+  busjeep: {
+    routeControl: null,
+    markers: [],
+    selectedRoute: null
+  }
 };
 
-// Routes
-const routes = {
+// Route Data
+const ROUTES = {
   'uhaw': {
     name: 'Uhaw Route',
-    color: 'green',
+    color: '#10b981',
     stops: [
       [6.05767570956232, 125.10107993582126],
       [6.066884922625555, 125.1434596999282],
@@ -30,12 +36,14 @@ const routes = {
       [6.121359557284698, 125.19027992842483]
     ],
     labels: [
-      "Airport","Kanto uhaw station","Jollibee","Gensan mray logistics & transport","711 bulaong","Husky Terminal","RD Plaza","Pioneer Avenue","Palengke","SM","KCC","Robinsons"
+      "Airport", "Kanto Uhaw Station", "Jollibee", "GenSan Mray Logistics",
+      "7-Eleven Bulaong", "Husky Terminal", "RD Plaza", "Pioneer Avenue",
+      "Palengke", "SM", "KCC", "Robinsons"
     ]
   },
   'kanto-uhaw': {
     name: 'Kanto Uhaw Route',
-    color: 'yellow',
+    color: '#f59e0b',
     stops: [
       [6.078873108385696, 125.13528401472598],
       [6.077396262058303, 125.14070464684552],
@@ -47,39 +55,61 @@ const routes = {
       [6.127613973270192, 125.19631931002468]
     ],
     labels: [
-      "Lado Transco Terminal","Gensan National High","Western Oil","Pioneer AVE","Magsaysay UNITOP","KCC","Brigada Pharmacy","Lagao public Market"
+      "Lado Transco Terminal", "GenSan National High", "Western Oil",
+      "Pioneer Ave", "Magsaysay UNITOP", "KCC", "Brigada Pharmacy",
+      "Lagao Public Market"
     ]
   }
 };
 
-function initMap() {
-  const map = L.map('map').setView([6.116, 125.171], 13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap'
-  }).addTo(map);
-  state.map = map;
+// ==================== UTILITIES ====================
 
-  map.on('click', e => {
-    if (state.activeTab !== 'trike') return;
+function showToast(message, duration = 3000) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), duration);
+}
 
-    if (!state.startMarker) {
-      state.startMarker = L.marker(e.latlng, { draggable: true }).addTo(map);
-      state.startMarker.on('dragend', updateTrikeUI);
-    } else if (!state.endMarker) {
-      state.endMarker = L.marker(e.latlng, { draggable: true }).addTo(map);
-      state.endMarker.on('dragend', updateTrikeUI);
-    } else {
-      state.startMarker.setLatLng(state.endMarker.getLatLng());
-      state.endMarker.setLatLng(e.latlng);
-    }
-    updateTrikeUI();
+function showLoading() {
+  document.getElementById('loading').style.display = 'flex';
+}
+
+function hideLoading() {
+  document.getElementById('loading').style.display = 'none';
+}
+
+function formatLatLng(ll) {
+  return `${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}`;
+}
+
+// Custom marker icons
+function createMarkerIcon(label, color) {
+  return L.divIcon({
+    html: `
+      <div style="
+        width: 32px;
+        height: 32px;
+        background: ${color};
+        border: 3px solid white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Space Mono', monospace;
+        font-size: 14px;
+        font-weight: 700;
+        color: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      ">${label}</div>
+    `,
+    className: '',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16]
   });
 }
 
-function fmtLatLng(ll) {
-  return `${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}`;
-}
+// ==================== GEOCODING ====================
 
 async function reverseGeocode(latlng) {
   const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latlng.lat}&lon=${latlng.lng}`;
@@ -87,124 +117,156 @@ async function reverseGeocode(latlng) {
     const res = await fetch(url);
     const data = await res.json();
     const addr = data.address || {};
-    if (addr.road && addr.suburb) return `${addr.road}, ${addr.suburb}`;
-    if (addr.road) return addr.road;
-    if (addr.suburb) return addr.suburb;
-    return data.display_name || fmtLatLng(latlng);
-  } catch {
-    return fmtLatLng(latlng);
+    
+    const parts = [];
+    if (addr.road) parts.push(addr.road);
+    if (addr.suburb) parts.push(addr.suburb);
+    
+    return parts.length > 0 ? parts.join(', ') : formatLatLng(latlng);
+  } catch (error) {
+    console.error('Reverse geocoding error:', error);
+    return formatLatLng(latlng);
   }
 }
 
 async function geocode(query) {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', General Santos City')}`;
   try {
     const res = await fetch(url);
     const data = await res.json();
     if (data.length > 0) {
       return L.latLng(data[0].lat, data[0].lon);
     }
+    showToast('❌ Location not found');
     return null;
-  } catch {
+  } catch (error) {
+    console.error('Geocoding error:', error);
+    showToast('❌ Search failed');
     return null;
   }
 }
 
-async function updateTrikeUI() {
-  const startEl = document.getElementById('start-coord');
-  const endEl = document.getElementById('end-coord');
-  const distEl = document.getElementById('distance');
-  const fareEl = document.getElementById('fare');
+// ==================== MAP INITIALIZATION ====================
 
-  if (!state.startMarker || !state.endMarker) {
-    startEl.textContent = state.startMarker ? fmtLatLng(state.startMarker.getLatLng()) : 'Tap map or search';
-    endEl.textContent = state.endMarker ? fmtLatLng(state.endMarker.getLatLng()) : 'Tap map or search';
+function initMap() {
+  const map = L.map('map', {
+    zoomControl: true,
+    minZoom: 8,
+    maxZoom: 19
+  }).setView([6.116, 125.171], 13);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+  
+  state.map = map;
+
+  // Handle map clicks for trike mode
+  map.on('click', handleMapClick);
+  
+  // Fix map size
+  setTimeout(() => map.invalidateSize(), 100);
+  
+  return map;
+}
+
+function handleMapClick(e) {
+  if (state.currentMode !== 'trike') return;
+
+  const { startMarker, endMarker } = state.trike;
+
+  if (!startMarker) {
+    state.trike.startMarker = L.marker(e.latlng, {
+      draggable: true,
+      icon: createMarkerIcon('A', '#10b981')
+    }).addTo(state.map);
+    
+    state.trike.startMarker.on('dragend', updateTrikeRoute);
+    showToast('📍 Start point set');
+  } else if (!endMarker) {
+    state.trike.endMarker = L.marker(e.latlng, {
+      draggable: true,
+      icon: createMarkerIcon('B', '#ef4444')
+    }).addTo(state.map);
+    
+    state.trike.endMarker.on('dragend', updateTrikeRoute);
+    showToast('🎯 Calculating route...');
+  } else {
+    // Move markers
+    state.trike.startMarker.setLatLng(state.trike.endMarker.getLatLng());
+    state.trike.endMarker.setLatLng(e.latlng);
+    showToast('🔄 Route updated');
+  }
+  
+  updateTrikeRoute();
+}
+
+// ==================== TRIKE MODE ====================
+
+async function updateTrikeRoute() {
+  const { startMarker, endMarker } = state.trike;
+  const startEl = document.getElementById('start-display');
+  const endEl = document.getElementById('end-display');
+  const distEl = document.getElementById('distance-display');
+  const fareEl = document.getElementById('fare-display');
+
+  // No markers yet
+  if (!startMarker && !endMarker) {
+    startEl.textContent = 'Tap map or search';
+    endEl.textContent = 'Tap map or search';
     distEl.textContent = '—';
-    fareEl.textContent = '—';
-    if (state.routeControl) {
-      state.routeControl.remove();
-      state.routeControl = null;
-    }
+    fareEl.textContent = '₱—';
+    clearTrikeRoute();
     return;
   }
 
-  const a = state.startMarker.getLatLng();
-  const b = state.endMarker.getLatLng();
+  // Only start marker
+  if (startMarker && !endMarker) {
+    const startPos = startMarker.getLatLng();
+    startEl.textContent = 'Loading...';
+    const startName = await reverseGeocode(startPos);
+    startEl.textContent = startName;
+    
+    endEl.textContent = 'Tap map or search';
+    distEl.textContent = '—';
+    fareEl.textContent = '₱—';
+    clearTrikeRoute();
+    return;
+  }
 
+  // Both markers
+  const startPos = startMarker.getLatLng();
+  const endPos = endMarker.getLatLng();
+
+  // Update location names
   startEl.textContent = 'Loading...';
   endEl.textContent = 'Loading...';
-
+  
   const [startName, endName] = await Promise.all([
-    reverseGeocode(a),
-    reverseGeocode(b)
+    reverseGeocode(startPos),
+    reverseGeocode(endPos)
   ]);
-
+  
   startEl.textContent = startName;
   endEl.textContent = endName;
 
-  if (state.routeControl) {
-    state.routeControl.remove();
-    state.routeControl = null;
-  }
+  // Clear old route
+  clearTrikeRoute();
 
-  state.routeControl = L.Routing.control({
-    waypoints: [a, b],
-    lineOptions: { styles: [{ color: '#0ea5e9', weight: 4 }] },
-    router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1' }),
-    createMarker: () => null,
-    addWaypoints: false,
-    draggableWaypoints: false,
-    fitSelectedRoutes: false,
-    show: false
-  }).addTo(state.map);
-
-  state.routeControl.on('routesfound', async e => {
-    const route = e.routes[0];
-    const distanceKm = route.summary.totalDistance / 1000;
-    distEl.textContent = distanceKm.toFixed(3);
-
-    try {
-      const { fare } = await Api.computeFare({ mode: 'trike', distanceKm });
-      fareEl.textContent = `₱${fare}`;
-    } catch {
-      fareEl.textContent = 'Error';
-    }
-  });
-
-  state.routeControl.on('routingerror', () => {
-    distEl.textContent = '—';
-    fareEl.textContent = 'Error';
-  });
-}
-
-function updateBusJeepUI() {
-  const routeKey = document.getElementById('route-picker').value;
-  const fareEl = document.getElementById('bus-fare');
-
-  clearBusJeepUI();
-
-  if (!routeKey) {
-    fareEl.textContent = '—';
-    return;
-  }
-
-  const route = routes[routeKey];
-  const waypoints = route.stops.map(([lat, lng]) => L.latLng(lat, lng));
-
-  route.stops.forEach((coords, idx) => {
-    const marker = L.circleMarker(coords, {
-      radius: 6,
-      color: route.color,
-      fillColor: route.color,
-      fillOpacity: 0.8
-    }).addTo(state.map).bindTooltip(route.labels[idx]);
-    state.busMarkers.push(marker);
-  });
-
-  state.busRouteControl = L.Routing.control({
-    waypoints,
-    lineOptions: { styles: [{ color: route.color, weight: 4 }] },
-    router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1' }),
+  // Calculate new route
+  state.trike.routeControl = L.Routing.control({
+    waypoints: [startPos, endPos],
+    lineOptions: {
+      styles: [{
+        color: '#2563eb',
+        weight: 5,
+        opacity: 0.8
+      }]
+    },
+    router: L.Routing.osrmv1({
+      serviceUrl: 'https://router.project-osrm.org/route/v1'
+    }),
     createMarker: () => null,
     addWaypoints: false,
     draggableWaypoints: false,
@@ -212,133 +274,305 @@ function updateBusJeepUI() {
     show: false
   }).addTo(state.map);
 
-  fareEl.textContent = '₱20';
+  state.trike.routeControl.on('routesfound', async (e) => {
+    const route = e.routes[0];
+    const distanceKm = route.summary.totalDistance / 1000;
+    distEl.textContent = `${distanceKm.toFixed(2)} km`;
+
+    try {
+      const { fare } = await Api.computeFare({ mode: 'trike', distanceKm });
+      fareEl.textContent = `₱${fare}`;
+      showToast(`💰 Estimated fare: ₱${fare}`);
+    } catch (error) {
+      console.error('Fare calculation error:', error);
+      fareEl.textContent = '₱—';
+      showToast('❌ Failed to calculate fare');
+    }
+  });
+
+  state.trike.routeControl.on('routingerror', () => {
+    distEl.textContent = '—';
+    fareEl.textContent = '₱—';
+    showToast('❌ Could not find route');
+  });
 }
 
-// Set current location as start
-function setCurrentLocationAsStart() {
+function clearTrikeRoute() {
+  if (state.trike.routeControl) {
+    state.trike.routeControl.remove();
+    state.trike.routeControl = null;
+  }
+}
+
+function clearTrikeMarkers() {
+  if (state.trike.startMarker) {
+    state.trike.startMarker.remove();
+    state.trike.startMarker = null;
+  }
+  if (state.trike.endMarker) {
+    state.trike.endMarker.remove();
+    state.trike.endMarker = null;
+  }
+  clearTrikeRoute();
+  
+  // Clear inputs
+  document.getElementById('search-start').value = '';
+  document.getElementById('search-end').value = '';
+  document.getElementById('start-display').textContent = 'Tap map or search';
+  document.getElementById('end-display').textContent = 'Tap map or search';
+  document.getElementById('distance-display').textContent = '—';
+  document.getElementById('fare-display').textContent = '₱—';
+}
+
+// ==================== BUS/JEEP MODE ====================
+
+function showRoute(routeKey) {
+  clearBusJeepRoute();
+  
+  const route = ROUTES[routeKey];
+  if (!route) return;
+
+  state.busjeep.selectedRoute = routeKey;
+
+  // Add markers
+  route.stops.forEach((coords, idx) => {
+    const marker = L.circleMarker(coords, {
+      radius: 8,
+      color: '#ffffff',
+      fillColor: route.color,
+      fillOpacity: 1,
+      weight: 3
+    }).addTo(state.map);
+    
+    marker.bindTooltip(route.labels[idx], {
+      permanent: false,
+      direction: 'top'
+    });
+    
+    state.busjeep.markers.push(marker);
+  });
+
+  // Add route line
+  const waypoints = route.stops.map(([lat, lng]) => L.latLng(lat, lng));
+  
+  state.busjeep.routeControl = L.Routing.control({
+    waypoints,
+    lineOptions: {
+      styles: [{
+        color: route.color,
+        weight: 5,
+        opacity: 0.8
+      }]
+    },
+    router: L.Routing.osrmv1({
+      serviceUrl: 'https://router.project-osrm.org/route/v1'
+    }),
+    createMarker: () => null,
+    addWaypoints: false,
+    draggableWaypoints: false,
+    fitSelectedRoutes: true,
+    show: false
+  }).addTo(state.map);
+
+  // Show route detail
+  showRouteDetail(route);
+  showToast(`🚌 ${route.name} selected`);
+}
+
+function showRouteDetail(route) {
+  const detailEl = document.getElementById('route-detail');
+  const nameEl = document.getElementById('route-detail-name');
+  const stopsEl = document.getElementById('stops-list');
+  
+  nameEl.textContent = route.name;
+  
+  stopsEl.innerHTML = route.labels.map((label, idx) => `
+    <div class="stop-item">
+      <div class="stop-number">${idx + 1}</div>
+      <div>${label}</div>
+    </div>
+  `).join('');
+  
+  detailEl.style.display = 'block';
+}
+
+function clearBusJeepRoute() {
+  if (state.busjeep.routeControl) {
+    state.busjeep.routeControl.remove();
+    state.busjeep.routeControl = null;
+  }
+  
+  state.busjeep.markers.forEach(m => m.remove());
+  state.busjeep.markers = [];
+  state.busjeep.selectedRoute = null;
+  
+  document.getElementById('route-detail').style.display = 'none';
+}
+
+// ==================== MODE SWITCHING ====================
+
+function switchMode(mode) {
+  if (state.currentMode === mode) return;
+  
+  state.currentMode = mode;
+  
+  // Update UI
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    const isActive = btn.dataset.mode === mode;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', isActive);
+  });
+  
+  document.querySelectorAll('.panel-view').forEach(view => {
+    view.classList.toggle('active', view.dataset.view === mode);
+  });
+  
+  // Clear map elements
+  if (mode !== 'trike') {
+    clearTrikeMarkers();
+  }
+  if (mode !== 'busjeep') {
+    clearBusJeepRoute();
+  }
+  
+  setTimeout(() => state.map.invalidateSize(), 100);
+}
+
+// ==================== GEOLOCATION ====================
+
+function useCurrentLocation() {
   if (!navigator.geolocation) {
-    alert("Geolocation is not supported by your browser.");
+    showToast('❌ Geolocation not supported');
     return;
   }
 
+  showToast('📍 Getting location...');
+
   navigator.geolocation.getCurrentPosition(
-    pos => {
-            const { latitude, longitude } = pos.coords;
+    (pos) => {
+      const { latitude, longitude } = pos.coords;
       const latlng = L.latLng(latitude, longitude);
 
-      if (state.startMarker) {
-        state.startMarker.setLatLng(latlng);
+      if (state.trike.startMarker) {
+        state.trike.startMarker.setLatLng(latlng);
       } else {
-        state.startMarker = L.marker(latlng, { draggable: true }).addTo(state.map);
-        state.startMarker.on('dragend', updateTrikeUI);
+        state.trike.startMarker = L.marker(latlng, {
+          draggable: true,
+          icon: createMarkerIcon('A', '#10b981')
+        }).addTo(state.map);
+        state.trike.startMarker.on('dragend', updateTrikeRoute);
       }
 
       state.map.setView(latlng, 15);
-      updateTrikeUI();
+      updateTrikeRoute();
+      showToast('✅ Location set');
     },
-    err => {
-      alert("Unable to retrieve your location: " + err.message);
-    }
+    (error) => {
+      console.error('Geolocation error:', error);
+      showToast('❌ Could not get location');
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
   );
 }
 
-function initControls() {
-  document.getElementById('reset-trike').addEventListener('click', () => {
-    clearTrikeUI();
-    updateTrikeUI();
-  });
+// ==================== EVENT LISTENERS ====================
 
-  document.getElementById('use-location').addEventListener('click', setCurrentLocationAsStart);
-
-  // Search bar for Point A
-  document.getElementById('search-start').addEventListener('change', async e => {
-    const query = e.target.value.trim();
-    if (!query) return;
-    const latlng = await geocode(query);
-    if (latlng) {
-      if (state.startMarker) {
-        state.startMarker.setLatLng(latlng);
-      } else {
-        state.startMarker = L.marker(latlng, { draggable: true }).addTo(state.map);
-        state.startMarker.on('dragend', updateTrikeUI);
-      }
-      state.map.setView(latlng, 15);
-      updateTrikeUI();
-    }
-  });
-
-  // Search bar for Point B
-  document.getElementById('search-end').addEventListener('change', async e => {
-    const query = e.target.value.trim();
-    if (!query) return;
-    const latlng = await geocode(query);
-    if (latlng) {
-      if (state.endMarker) {
-        state.endMarker.setLatLng(latlng);
-      } else {
-        state.endMarker = L.marker(latlng, { draggable: true }).addTo(state.map);
-        state.endMarker.on('dragend', updateTrikeUI);
-      }
-      state.map.setView(latlng, 15);
-      updateTrikeUI();
-    }
-  });
-}
-
-function initTabs() {
-  const tabs = document.querySelectorAll('.tab');
-  const trikePanel = document.getElementById('panel-trike');
-  const aboutPanel = document.getElementById('panel-about');
-  const busJeepPanel = document.getElementById('panel-busjeep');
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      state.activeTab = tab.dataset.tab;
-
-      trikePanel.open = false;
-      aboutPanel.open = false;
-      busJeepPanel.open = false;
-
-      clearTrikeUI();
-      clearBusJeepUI();
-
-      if (state.activeTab === 'trike') {
-        trikePanel.open = true;
-        updateTrikeUI();
-      } else if (state.activeTab === 'busjeep') {
-        busJeepPanel.open = true;
-        updateBusJeepUI();
-      } else if (state.activeTab === 'about') {
-        aboutPanel.open = true;
-      }
+function initEventListeners() {
+  // Mode switcher
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchMode(btn.dataset.mode);
     });
   });
+
+  // Reset button (in quick actions)
+  document.getElementById('reset-trike').addEventListener('click', () => {
+    clearTrikeMarkers();
+    showToast('🔄 Reset');
+  });
+
+  // Use location button
+  document.getElementById('use-location').addEventListener('click', useCurrentLocation);
+
+  // Search inputs
+  const searchStart = document.getElementById('search-start');
+  const searchEnd = document.getElementById('search-end');
+
+  searchStart.addEventListener('keypress', async (e) => {
+    if (e.key !== 'Enter') return;
+    const query = e.target.value.trim();
+    if (!query) return;
+
+    const latlng = await geocode(query);
+    if (latlng) {
+      if (state.trike.startMarker) {
+        state.trike.startMarker.setLatLng(latlng);
+      } else {
+        state.trike.startMarker = L.marker(latlng, {
+          draggable: true,
+          icon: createMarkerIcon('A', '#10b981')
+        }).addTo(state.map);
+        state.trike.startMarker.on('dragend', updateTrikeRoute);
+      }
+      state.map.setView(latlng, 15);
+      updateTrikeRoute();
+      e.target.blur();
+    }
+  });
+
+  searchEnd.addEventListener('keypress', async (e) => {
+    if (e.key !== 'Enter') return;
+    const query = e.target.value.trim();
+    if (!query) return;
+
+    const latlng = await geocode(query);
+    if (latlng) {
+      if (state.trike.endMarker) {
+        state.trike.endMarker.setLatLng(latlng);
+      } else {
+        state.trike.endMarker = L.marker(latlng, {
+          draggable: true,
+          icon: createMarkerIcon('B', '#ef4444')
+        }).addTo(state.map);
+        state.trike.endMarker.on('dragend', updateTrikeRoute);
+      }
+      state.map.setView(latlng, 15);
+      updateTrikeRoute();
+      e.target.blur();
+    }
+  });
+
+  // Route cards
+  document.querySelectorAll('.route-card').forEach(card => {
+    card.addEventListener('click', () => {
+      showRoute(card.dataset.route);
+    });
+  });
+
+  // Clear route button
+  document.getElementById('clear-route').addEventListener('click', () => {
+    clearBusJeepRoute();
+    showToast('Route cleared');
+  });
 }
 
-function boot() {
+// ==================== INITIALIZATION ====================
+
+function init() {
   initMap();
-  initControls();
-  initTabs();
+  initEventListeners();
+  
+  setTimeout(() => {
+    showToast('👋 Welcome to GenSan Fare!', 3000);
+  }, 500);
+}
 
-  const routePicker = document.getElementById('route-picker');
-  if (routePicker) {
-    routePicker.addEventListener('change', updateBusJeepUI);
+// Start app
+document.addEventListener('DOMContentLoaded', init);
+
+// Handle window resize
+window.addEventListener('resize', () => {
+  if (state.map) {
+    state.map.invalidateSize();
   }
-}
-
-document.addEventListener('DOMContentLoaded', boot);
-
-function clearTrikeUI() {
-  if (state.startMarker) { state.startMarker.remove(); state.startMarker = null; }
-  if (state.endMarker) { state.endMarker.remove(); state.endMarker = null; }
-  if (state.routeControl) { state.routeControl.remove(); state.routeControl = null; }
-}
-
-function clearBusJeepUI() {
-  if (state.busRouteControl) { state.busRouteControl.remove(); state.busRouteControl = null; }
-  state.busMarkers.forEach(m => m.remove());
-  state.busMarkers = [];
-}
+});
