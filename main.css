@@ -48,6 +48,7 @@
   --space-8: 32px;
   --space-10: 40px;
   --space-12: 48px;
+  --space-20: 80px;
   
   /* Typography */
   --font-base: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -272,6 +273,11 @@ body {
   flex-direction: column;
   animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   overflow: hidden;
+  transition: transform var(--transition);
+}
+
+.control-panel.minimized {
+  transform: translateY(calc(100% - 60px));
 }
 
 @keyframes slideUp {
@@ -294,6 +300,10 @@ body {
     border-radius: var(--radius-xl);
     animation: slideInRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
+  
+  .control-panel.minimized {
+    transform: translateY(0);
+  }
 
   @keyframes slideInRight {
     from {
@@ -313,6 +323,12 @@ body {
   justify-content: center;
   padding: var(--space-3) 0;
   cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.panel-handle:active {
+  cursor: grabbing;
 }
 
 .handle-bar {
@@ -320,6 +336,12 @@ body {
   height: 4px;
   background: var(--gray-300);
   border-radius: var(--radius-full);
+  transition: background var(--transition);
+}
+
+.panel-handle:hover .handle-bar,
+.panel-handle:active .handle-bar {
+  background: var(--gray-400);
 }
 
 @media (min-width: 1024px) {
@@ -856,9 +878,9 @@ body {
 /* ==================== TOAST ==================== */
 .toast {
   position: fixed;
-  bottom: calc(85vh + var(--space-4));
+  top: var(--space-20);
   left: 50%;
-  transform: translateX(-50%) translateY(200px);
+  transform: translateX(-50%) translateY(-100px);
   max-width: 90%;
   width: max-content;
   padding: var(--space-3) var(--space-5);
@@ -879,9 +901,13 @@ body {
 
 @media (min-width: 1024px) {
   .toast {
+    top: auto;
     bottom: var(--space-6);
-    left: 50%;
-    right: auto;
+    transform: translateX(-50%) translateY(100px);
+  }
+  
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
   }
 }
 
