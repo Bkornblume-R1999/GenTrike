@@ -314,7 +314,7 @@ body {
   background: var(--white);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-  max-height: 85vh;
+  max-height: 50vh;
   display: flex;
   flex-direction: column;
   animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
