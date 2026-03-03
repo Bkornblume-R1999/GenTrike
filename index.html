@@ -18,7 +18,7 @@
   <!-- Floating header -->
   <header class="floating-header">
     <div class="logo">
-      <span class="logo-icon">🚖</span>
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='20' fill='%23000'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%23fff'/%3E%3C/svg%3E" alt="BKORN" class="logo-icon">
       <div class="logo-text">
         <h1>Geo Gensan</h1>
         <p>Don't get lost</p>
@@ -148,6 +148,10 @@
         <div class="instruction-card">
           <p>💡 Tap any two points on the map to calculate fare</p>
         </div>
+
+        <div class="warning-box">
+          <p><strong>⚠️ Route Advisory:</strong> Actual routes may differ due to traffic or driver preference. This may affect the final fare. Always confirm with your driver before paying.</p>
+        </div>
       </div>
     </div>
 
@@ -198,6 +202,10 @@
         <div class="info-box">
           <strong>Variable Fare:</strong> Bus & jeep fares typically range from ₱20-30 depending on distance traveled. Fares vary by route and distance from your boarding point to destination. Always confirm the fare with your driver before paying.
         </div>
+
+        <div class="warning-box">
+          <strong>⚠️ Route Advisory:</strong> Drivers may take alternative routes due to traffic conditions, road closures, or detours. The displayed routes are typical paths but actual routes may vary.
+        </div>
       </div>
     </div>
 
@@ -205,6 +213,9 @@
     <div class="panel-view" data-view="info">
       <div class="panel-header">
         <h2 class="panel-title">About</h2>
+        <button class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Toggle dark mode">
+          <span class="toggle-icon">🌙</span>
+        </button>
       </div>
 
       <div class="panel-content">
@@ -559,6 +570,14 @@
 
         <div class="disclaimer">
           <strong>Disclaimer:</strong> Fares are based on GenSan City Ordinance No. 08, Series of 2023. The driver may take different routes which may affect the final fare, so always confirm with your driver. This calculator provides estimates only.
+        </div>
+
+        <div class="branding">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='20' fill='%23000'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%23fff'/%3E%3C/svg%3E" alt="BKORN Studios" class="branding-logo">
+          <div class="branding-text">
+            <strong>BKORN</strong>
+            <span>STUDIOS</span>
+          </div>
         </div>
       </div>
     </div>
