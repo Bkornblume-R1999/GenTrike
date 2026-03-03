@@ -9,17 +9,17 @@ export const Api = {
       // Ordinance-based fare: ₱15 for first 4 km, then ₱1/km
       baseFare = rounded <= 4 ? 15 : 15 + Math.ceil(rounded - 4) * 1;
     } else if (mode === 'bus' || mode === 'jeep') {
-      // Flat fare for all bus/jeep rides inside GenSan
-      baseFare = 20;
+      // Variable fare for bus/jeep rides inside GenSan
+      baseFare = 20; // Minimum fare
     } else {
       throw new Error('Unsupported mode');
     }
 
-    // Apply 20% discount for PWD, Senior Citizens, and Students
+    // Apply 20% discount for special passengers (PWD, Senior Citizens, Students)
     let discountAmount = 0;
     let finalFare = baseFare;
     
-    if (discountType === 'pwd' || discountType === 'senior' || discountType === 'student') {
+    if (discountType === 'special') {
       discountAmount = Math.round(baseFare * 0.2);
       finalFare = baseFare - discountAmount;
     }
