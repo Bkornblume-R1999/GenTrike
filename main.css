@@ -114,15 +114,94 @@ body {
   z-index: 1;
 }
 
-body.dark-mode #map {
-  filter: invert(1) hue-rotate(180deg);
-}
+/* Map is intentionally excluded from dark mode — it stays normal */
 
-body.dark-mode .leaflet-control-zoom,
+/* Explicitly ensure all UI panels use the dark-mode CSS variables */
 body.dark-mode .floating-header,
 body.dark-mode .mode-switcher,
 body.dark-mode .control-panel {
-  filter: invert(1) hue-rotate(180deg);
+  background: var(--gray-100);
+  color: var(--gray-900);
+}
+
+body.dark-mode .panel-title,
+body.dark-mode .panel-header h2,
+body.dark-mode .info-section h3,
+body.dark-mode .info-section h4,
+body.dark-mode .info-section p,
+body.dark-mode .route-name,
+body.dark-mode .route-detail-header h3,
+body.dark-mode .matrix-header,
+body.dark-mode .matrix-table th,
+body.dark-mode .matrix-table td,
+body.dark-mode .matrix-footer p,
+body.dark-mode .matrix-footer strong,
+body.dark-mode .matrix-footer li,
+body.dark-mode .warning-box,
+body.dark-mode .instruction-card p,
+body.dark-mode .action-text,
+body.dark-mode .discount-label,
+body.dark-mode .route-stops,
+body.dark-mode .summary-label,
+body.dark-mode .summary-value,
+body.dark-mode .fare-label,
+body.dark-mode .fare-formula,
+body.dark-mode .matrix-intro,
+body.dark-mode .matrix-note,
+body.dark-mode .disclaimer,
+body.dark-mode .branding-text strong,
+body.dark-mode .branding-text span,
+body.dark-mode .input-label,
+body.dark-mode .stop-item,
+body.dark-mode .info-box {
+  color: var(--gray-900);
+}
+
+body.dark-mode .action-card,
+body.dark-mode .route-card,
+body.dark-mode .discount-btn,
+body.dark-mode .matrix-tab,
+body.dark-mode .stop-item,
+body.dark-mode .input-wrapper,
+body.dark-mode .matrix-table,
+body.dark-mode .branding {
+  background: var(--gray-200);
+  border-color: var(--gray-300);
+}
+
+body.dark-mode .location-input-group {
+  background: var(--gray-200);
+}
+
+body.dark-mode .route-detail,
+body.dark-mode .matrix-footer,
+body.dark-mode .instruction-card,
+body.dark-mode .info-box,
+body.dark-mode .matrix-note,
+body.dark-mode .matrix-table thead {
+  background: var(--gray-200);
+}
+
+body.dark-mode .location-input {
+  color: var(--gray-900);
+}
+
+body.dark-mode .handle-bar {
+  background: var(--gray-400);
+}
+
+body.dark-mode .mode-btn {
+  color: var(--gray-700);
+}
+
+body.dark-mode .mode-btn:hover {
+  background: var(--gray-200);
+  color: var(--gray-900);
+}
+
+body.dark-mode .leaflet-control-zoom a {
+  background: var(--gray-100) !important;
+  color: var(--gray-900) !important;
 }
 
 /* Custom leaflet controls positioning */
@@ -195,15 +274,15 @@ body.dark-mode .control-panel {
 }
 
 .logo-icon {
-  width: 24px;
-  height: 24px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
 }
 
 @media (min-width: 640px) {
   .logo-icon {
-    width: 28px;
-    height: 28px;
+    width: 48px;
+    height: 48px;
   }
 }
 
@@ -663,6 +742,8 @@ body.dark-mode .toggle-icon::before {
   flex: 1;
   min-width: 0;
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .location-input {
@@ -674,28 +755,31 @@ body.dark-mode .toggle-icon::before {
   font-weight: 500;
   color: var(--gray-900);
   outline: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  pointer-events: none;
+  position: relative;
+  z-index: 2;
 }
 
-.location-input:focus {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.location-input:focus + .input-label {
-  opacity: 0;
+.location-input::placeholder {
+  color: var(--gray-400);
 }
 
 .input-label {
   font-size: 14px;
   color: var(--gray-500);
   user-select: none;
-  cursor: text;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
   transition: opacity var(--transition);
+  z-index: 1;
+}
+
+/* Hide the label when input has content or is focused */
+.location-input:focus ~ .input-label,
+.location-input:not(:placeholder-shown) ~ .input-label {
+  opacity: 0;
 }
 
 .connection-line {
