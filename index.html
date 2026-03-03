@@ -68,6 +68,29 @@
           </button>
         </div>
 
+        <!-- Discount selector -->
+        <div class="discount-selector">
+          <label class="discount-label">Passenger Type</label>
+          <div class="discount-options">
+            <button class="discount-btn active" data-discount="none">
+              <span class="discount-icon">👤</span>
+              <span class="discount-name">Regular</span>
+            </button>
+            <button class="discount-btn" data-discount="pwd">
+              <span class="discount-icon">♿</span>
+              <span class="discount-name">PWD</span>
+            </button>
+            <button class="discount-btn" data-discount="senior">
+              <span class="discount-icon">👴</span>
+              <span class="discount-name">Senior</span>
+            </button>
+            <button class="discount-btn" data-discount="student">
+              <span class="discount-icon">🎓</span>
+              <span class="discount-name">Student</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Location inputs -->
         <div class="location-input-group">
           <div class="input-wrapper">
@@ -109,10 +132,22 @@
           </div>
           <div class="summary-divider"></div>
           <div class="fare-display-main">
-            <span class="fare-label">Estimated Fare</span>
-            <span class="fare-amount" id="fare-display">₱—</span>
+            <div class="fare-top">
+              <span class="fare-label">Estimated Fare</span>
+              <span class="fare-amount" id="fare-display">₱—</span>
+            </div>
+            <div class="fare-breakdown" id="fare-breakdown" style="display: none;">
+              <div class="breakdown-row">
+                <span>Regular Fare:</span>
+                <span id="regular-fare">₱—</span>
+              </div>
+              <div class="breakdown-row discount-applied">
+                <span id="discount-label">Discount (20%):</span>
+                <span id="discount-amount">-₱—</span>
+              </div>
+            </div>
           </div>
-          <div class="fare-formula">
+          <div class="fare-formula" id="fare-formula">
             ₱15 base (4km) + ₱1/km
           </div>
         </div>
@@ -149,6 +184,42 @@
             </div>
             <div class="route-fare">₱20</div>
           </button>
+
+          <button class="route-card" data-route="lagao">
+            <div class="route-badge blue">🔵</div>
+            <div class="route-info">
+              <h3 class="route-name">Lagao Route</h3>
+              <p class="route-stops">10 stops • Terminal to City Hall</p>
+            </div>
+            <div class="route-fare">₱20</div>
+          </button>
+
+          <button class="route-card" data-route="dadiangas">
+            <div class="route-badge red">🔴</div>
+            <div class="route-info">
+              <h3 class="route-name">Dadiangas Route</h3>
+              <p class="route-stops">8 stops • Wharf to Downtown</p>
+            </div>
+            <div class="route-fare">₱20</div>
+          </button>
+
+          <button class="route-card" data-route="calumpang">
+            <div class="route-badge purple">🟣</div>
+            <div class="route-info">
+              <h3 class="route-name">Calumpang Route</h3>
+              <p class="route-stops">9 stops • Market to Calumpang</p>
+            </div>
+            <div class="route-fare">₱20</div>
+          </button>
+
+          <button class="route-card" data-route="labangal">
+            <div class="route-badge orange">🟠</div>
+            <div class="route-info">
+              <h3 class="route-name">Labangal Route</h3>
+              <p class="route-stops">11 stops • CBD to Labangal</p>
+            </div>
+            <div class="route-fare">₱20</div>
+          </button>
         </div>
 
         <div class="route-detail" id="route-detail" style="display: none;">
@@ -160,7 +231,7 @@
         </div>
 
         <div class="info-box">
-          <strong>Flat Fare:</strong> All bus & jeep rides within GenSan cost ₱20
+          <strong>Flat Fare:</strong> All bus & jeep rides within GenSan cost ₱20 (₱16 with 20% discount for PWD, Senior Citizens, and Students)
         </div>
       </div>
     </div>
@@ -174,7 +245,7 @@
       <div class="panel-content">
         <div class="info-section">
           <h3>What is this?</h3>
-          <p>GenSan Fare helps you plan trips and calculate transportation costs in General Santos City with real-time route mapping.</p>
+          <p>GenSan Fare helps you plan trips and calculate transportation costs in General Santos City with real-time route mapping based on City Ordinance No. 08, Series of 2023.</p>
         </div>
 
         <div class="info-section">
@@ -184,14 +255,14 @@
               <span class="feature-icon">🛺</span>
               <div>
                 <strong>Trike Fares</strong>
-                <p>Distance-based pricing</p>
+                <p>Distance-based pricing with discounts</p>
               </div>
             </div>
             <div class="feature-item">
               <span class="feature-icon">🚌</span>
               <div>
                 <strong>Bus Routes</strong>
-                <p>Major route maps</p>
+                <p>Multiple route maps</p>
               </div>
             </div>
             <div class="feature-item">
@@ -202,10 +273,10 @@
               </div>
             </div>
             <div class="feature-item">
-              <span class="feature-icon">🗺️</span>
+              <span class="feature-icon">💳</span>
               <div>
-                <strong>Interactive Map</strong>
-                <p>Tap anywhere to route</p>
+                <strong>Discount Calculator</strong>
+                <p>PWD, Senior, Student rates</p>
               </div>
             </div>
           </div>
@@ -215,19 +286,334 @@
           <h3>Fare Guide</h3>
           <div class="fare-guide">
             <div class="guide-item">
-              <span class="guide-vehicle">🛺 Trike</span>
+              <span class="guide-vehicle">🛺 Trike (Regular)</span>
               <span class="guide-price">₱15 + ₱1/km</span>
             </div>
             <div class="guide-item">
-              <span class="guide-vehicle">🚌 Bus/Jeep</span>
+              <span class="guide-vehicle">🛺 Trike (Special*)</span>
+              <span class="guide-price">₱12 + ₱0.80/km</span>
+            </div>
+            <div class="guide-item">
+              <span class="guide-vehicle">🚌 Bus/Jeep (Regular)</span>
               <span class="guide-price">₱20 flat</span>
             </div>
+            <div class="guide-item">
+              <span class="guide-vehicle">🚌 Bus/Jeep (Special*)</span>
+              <span class="guide-price">₱16 flat</span>
+            </div>
+          </div>
+          
+          <div class="discount-info-box">
+            <h4>*Special Discounts (20% off)</h4>
+            <ul>
+              <li><strong>PWD:</strong> Persons with Disability (with valid ID)</li>
+              <li><strong>Senior Citizens:</strong> 60 years old and above (with valid ID)</li>
+              <li><strong>Students:</strong> With valid school ID</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>Official Fare Matrix</h3>
+          <p class="matrix-intro">The following are the official tricycle fare matrices for different clusters in General Santos City as per Ordinance No. 08, Series of 2023:</p>
+          
+          <div class="matrix-tabs">
+            <button class="matrix-tab active" data-cluster="white">White</button>
+            <button class="matrix-tab" data-cluster="apple">Apple</button>
+            <button class="matrix-tab" data-cluster="red">Red</button>
+          </div>
+
+          <div class="matrix-container">
+            <!-- WHITE CLUSTER -->
+            <div class="matrix-view active" data-cluster="white">
+              <div class="matrix-header">White Cluster Routes</div>
+              <div class="matrix-note">Base fare: ₱15 (first 4km) + ₱1.00 per additional km</div>
+              <div class="matrix-table-wrapper">
+                <table class="matrix-table">
+                  <thead>
+                    <tr>
+                      <th class="route-col">Route</th>
+                      <th class="dist-col">Distance</th>
+                      <th class="fare-col">Regular</th>
+                      <th class="fare-col">Special*</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>CBD/Public Market to Purok Mabuhay Satellite Market</td>
+                      <td>4 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Brgy. Labangal - San Isidro</td>
+                      <td>4 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>KCC/Robinson Via Glifos St. to Leonandria</td>
+                      <td>4 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Habitat Phase III</td>
+                      <td>8 km</td>
+                      <td>₱19</td>
+                      <td>₱15</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to VSM Heights</td>
+                      <td>8 km</td>
+                      <td>₱19</td>
+                      <td>₱15</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Habitat Phase A</td>
+                      <td>9 km</td>
+                      <td>₱20</td>
+                      <td>₱16</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Brgy. Ilud - Katangawan</td>
+                      <td>9 km</td>
+                      <td>₱20</td>
+                      <td>₱16</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Brgy. Ilud - Kalabchay</td>
+                      <td>13 km</td>
+                      <td>₱24</td>
+                      <td>₱19</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Brgy. Ilud - Conel</td>
+                      <td>15 km</td>
+                      <td>₱26</td>
+                      <td>₱21</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Brgy. Ilud - Olympog</td>
+                      <td>16 km</td>
+                      <td>₱27</td>
+                      <td>₱22</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Brgy. Ilud - Upper Labay</td>
+                      <td>25 km</td>
+                      <td>₱36</td>
+                      <td>₱29</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- APPLE-GREEN CLUSTER -->
+            <div class="matrix-view" data-cluster="apple">
+              <div class="matrix-header">Apple-Green Cluster Routes</div>
+              <div class="matrix-note">Base fare: ₱15 (first 4km) + ₱1.00 per additional km</div>
+              <div class="matrix-table-wrapper">
+                <table class="matrix-table">
+                  <thead>
+                    <tr>
+                      <th class="route-col">Route</th>
+                      <th class="dist-col">Distance</th>
+                      <th class="fare-col">Regular</th>
+                      <th class="fare-col">Special*</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>SM to Bulaong Terminal</td>
+                      <td>2.5 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>KCC/Caloocan/SM to Bulaong Terminal</td>
+                      <td>3.14 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>KCC/Robinson/SM to Liceo NDSL Junction</td>
+                      <td>3.42 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>Plaza Heneral Santos to Lagao Gym</td>
+                      <td>3.45 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>SM via Aparente St. to Mindanao Medical Center</td>
+                      <td>3.68 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>SM to SM Store More</td>
+                      <td>3.7 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>KCC/Robinson to Greenfield Residence</td>
+                      <td>3.83 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>KCC/Robinson to Legaspi National High School</td>
+                      <td>3.91 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Pioneer/Aparente Junction</td>
+                      <td>3.93 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Salvasal St.</td>
+                      <td>3.97 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>KCC/Robinson to Liceo City Heights</td>
+                      <td>4 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- RED CLUSTER -->
+            <div class="matrix-view" data-cluster="red">
+              <div class="matrix-header">Red Cluster Routes</div>
+              <div class="matrix-note">Base fare: ₱15 (first 4km) + ₱1.00 per additional km</div>
+              <div class="matrix-table-wrapper">
+                <table class="matrix-table">
+                  <thead>
+                    <tr>
+                      <th class="route-col">Route</th>
+                      <th class="dist-col">Distance</th>
+                      <th class="fare-col">Regular</th>
+                      <th class="fare-col">Special*</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>KCC via Public Market to Petronas Gas Station</td>
+                      <td>3.8 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>Plaza Heneral Santos to King Solomon Institute</td>
+                      <td>3.95 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>SM to Labangal Road Ceresita Fine Hotel</td>
+                      <td>3.96 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Bloomfields Subdivision</td>
+                      <td>3.98 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to King Solomon Institute</td>
+                      <td>3.99 km</td>
+                      <td>₱15</td>
+                      <td>₱12</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Brgy. Ilud - Calumpang</td>
+                      <td>6 km</td>
+                      <td>₱17</td>
+                      <td>₱14</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Barrio Blaan</td>
+                      <td>8 km</td>
+                      <td>₱19</td>
+                      <td>₱15</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Brgy. Ilud - Aponguol</td>
+                      <td>8 km</td>
+                      <td>₱19</td>
+                      <td>₱15</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Brgy. Ilud - Tambler</td>
+                      <td>10 km</td>
+                      <td>₱21</td>
+                      <td>₱17</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Lanton</td>
+                      <td>11 km</td>
+                      <td>₱22</td>
+                      <td>₱18</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Ellesport Complex</td>
+                      <td>11 km</td>
+                      <td>₱22</td>
+                      <td>₱18</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Brgy. Ilud - Fatima</td>
+                      <td>12 km</td>
+                      <td>₱23</td>
+                      <td>₱18</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Brgy. Ilud - Sinawal</td>
+                      <td>13 km</td>
+                      <td>₱24</td>
+                      <td>₱19</td>
+                    </tr>
+                    <tr>
+                      <td>CBD/Public Market to Batomlong/Siguel</td>
+                      <td>18 km</td>
+                      <td>₱29</td>
+                      <td>₱23</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="matrix-footer">
+            <p><strong>*Special fare rates (20% discount) apply to:</strong></p>
+            <ul>
+              <li>PWD (Persons with Disability) with valid ID</li>
+              <li>Senior Citizens (60 years and above) with valid ID</li>
+              <li>Students with valid school ID</li>
+            </ul>
+            <p class="matrix-legal"><strong>Legal Notice:</strong> Republic Act No. 10909 prohibits short charging. Drivers who refuse passengers due to short distance routes are subject to penalties under the law.</p>
           </div>
         </div>
 
         <div class="disclaimer">
-          <strong>Note:</strong> Fares are based on GenSan City Ordinance No. 08, Series of 2023. Driver may take different routes which may affect the fare so always confirm with your driver.
-        </div>
+          <strong>Disclaimer:</strong> Fares are based on GenSan City Ordinance No. 08, Series of 2023. The driver may take different routes which may affect the final fare, so always confirm with your driver. This calculator provides estimates only.
         </div>
       </div>
     </div>
@@ -247,4 +633,3 @@
   <script type="module" src="app.js"></script>
 </body>
 </html>
-
