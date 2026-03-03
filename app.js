@@ -1,6 +1,5 @@
 import { Api } from './api.js';
 
-// Application State
 const state = {
   map: null,
   currentMode: 'trike',
@@ -17,24 +16,23 @@ const state = {
   }
 };
 
-// Route Data - Expanded with more General Santos City routes
 const ROUTES = {
   'uhaw': {
     name: 'Uhaw Route',
     color: '#10b981',
     stops: [
-      [6.05767570956232, 125.10107993582126],   // Airport
-      [6.066884922625555, 125.1434596999282],   // Kanto Uhaw Station
-      [6.077595973054012, 125.14630932006035],  // Jollibee
-      [6.103867375918512, 125.15131957789644],  // GenSan Mray Logistics
-      [6.118545877545823, 125.16105536621555],  // 7-Eleven Bulaong
-      [6.113102709883002, 125.1641208727235],   // Husky Terminal
-      [6.112729529261363, 125.17019837345096],  // RD Plaza
-      [6.107332339041174, 125.17169075356206],  // Pioneer Avenue
-      [6.10715133832164, 125.17841548474036],   // Palengke
-      [6.11504792768598, 125.1810033808399],    // SM
-      [6.117269670385729, 125.18593755106797],  // KCC
-      [6.121359557284698, 125.19027992842483]   // Robinsons
+      [6.05767570956232, 125.10107993582126],
+      [6.066884922625555, 125.1434596999282],
+      [6.077595973054012, 125.14630932006035],
+      [6.103867375918512, 125.15131957789644],
+      [6.118545877545823, 125.16105536621555],
+      [6.113102709883002, 125.1641208727235],
+      [6.112729529261363, 125.17019837345096],
+      [6.107332339041174, 125.17169075356206],
+      [6.10715133832164, 125.17841548474036],
+      [6.11504792768598, 125.1810033808399],
+      [6.117269670385729, 125.18593755106797],
+      [6.121359557284698, 125.19027992842483]
     ],
     labels: [
       "Airport", "Kanto Uhaw Station", "Jollibee", "GenSan Mray Logistics",
@@ -46,14 +44,14 @@ const ROUTES = {
     name: 'Kanto Uhaw Route',
     color: '#f59e0b',
     stops: [
-      [6.078873108385696, 125.13528401472598],  // Lado Transco Terminal
-      [6.077396262058303, 125.14070464684552],  // GenSan National High
-      [6.077595973054012, 125.14630932006035],  // Western Oil
-      [6.107364931098272, 125.17185909281004],  // Pioneer Ave
-      [6.1094378291354685, 125.17859477710057], // Magsaysay UNITOP
-      [6.117269670385729, 125.18593755106797],  // KCC
-      [6.118803421745483, 125.19375059719822],  // Brigada Pharmacy
-      [6.127613973270192, 125.19631931002468]   // Lagao Public Market
+      [6.078873108385696, 125.13528401472598],
+      [6.077396262058303, 125.14070464684552],
+      [6.077595973054012, 125.14630932006035],
+      [6.107364931098272, 125.17185909281004],
+      [6.1094378291354685, 125.17859477710057],
+      [6.117269670385729, 125.18593755106797],
+      [6.118803421745483, 125.19375059719822],
+      [6.127613973270192, 125.19631931002468]
     ],
     labels: [
       "Lado Transco Terminal", "GenSan National High", "Western Oil",
@@ -61,97 +59,34 @@ const ROUTES = {
       "Lagao Public Market"
     ]
   },
-  'lagao': {
-    name: 'Lagao Route',
-    color: '#3b82f6',
+  'mabuhay': {
+    name: 'Mabuhay Route',
+    color: '#ffffff',
     stops: [
-      [6.127613973270192, 125.19631931002468],  // Lagao Market
-      [6.119584527392012, 125.19232841468442],  // Lagao Gym
-      [6.116882344293761, 125.18754235621987],  // Veranza Mall
-      [6.115287937423156, 125.18267431743526],  // Notre Dame
-      [6.112845371239487, 125.17874332915972],  // Gaisano Mall
-      [6.110574293841927, 125.17538426349432],  // Public Market
-      [6.108342618273854, 125.17289543821345],  // City Hall
-      [6.106821839463725, 125.17098374627438],  // Plaza Heneral Santos
-      [6.103867375918512, 125.16845321098765],  // Oval Plaza
-      [6.101234567890123, 125.16543219876543]   // Dadiangas Park
+      [6.110574293841927, 125.17538426349432],
+      [6.107234567890123, 125.17098765432109],
+      [6.103867375918512, 125.16654320987654],
+      [6.100456789012345, 125.16209876543210],
+      [6.097123456789012, 125.15765432109876],
+      [6.093789012345678, 125.15321098765432],
+      [6.090456789012345, 125.14876543210987],
+      [6.087123456789012, 125.14432109876543],
+      [6.083789012345678, 125.13987654321098],
+      [6.080456789012345, 125.13543210987654]
     ],
     labels: [
-      "Lagao Market", "Lagao Gym", "Veranza Mall", "Notre Dame",
-      "Gaisano Mall", "Public Market", "City Hall", "Plaza Heneral Santos",
-      "Oval Plaza", "Dadiangas Park"
-    ]
-  },
-  'dadiangas': {
-    name: 'Dadiangas Route',
-    color: '#ef4444',
-    stops: [
-      [6.095432123456789, 125.15234567891234],  // Dadiangas Wharf
-      [6.098765432109876, 125.15789012345678],  // Fish Port
-      [6.102345678901234, 125.16234567890123],  // Magsaysay Avenue
-      [6.105678901234567, 125.16789012345678],  // Quirino Avenue
-      [6.108901234567890, 125.17234567890123],  // Pioneer Avenue Junction
-      [6.112234567890123, 125.17689012345678],  // Public Market
-      [6.115567890123456, 125.18134567890123],  // SM City GenSan
-      [6.118890123456789, 125.18589012345678]   // Robinsons Place
-    ],
-    labels: [
-      "Dadiangas Wharf", "Fish Port", "Magsaysay Avenue", "Quirino Avenue",
-      "Pioneer Avenue Junction", "Public Market", "SM City GenSan", "Robinsons Place"
-    ]
-  },
-  'calumpang': {
-    name: 'Calumpang Route',
-    color: '#8b5cf6',
-    stops: [
-      [6.110574293841927, 125.17538426349432],  // Public Market
-      [6.105892736451827, 125.16983742651938],  // Bulaklakan
-      [6.101234897563421, 125.16532876549321],  // San Isidro
-      [6.097856234789123, 125.15987654321098],  // Sinawal
-      [6.093421876543210, 125.15432198765432],  // Calumpang Elementary
-      [6.089765432109876, 125.14987654321098],  // Calumpang Proper
-      [6.086543210987654, 125.14543210987654],  // Calumpang Heights
-      [6.083210987654321, 125.14098765432109],  // Calumpang Terminal
-      [6.079876543210987, 125.13654320987654]   // Upper Calumpang
-    ],
-    labels: [
-      "Public Market", "Bulaklakan", "San Isidro", "Sinawal",
-      "Calumpang Elementary", "Calumpang Proper", "Calumpang Heights",
-      "Calumpang Terminal", "Upper Calumpang"
-    ]
-  },
-  'labangal': {
-    name: 'Labangal Route',
-    color: '#f97316',
-    stops: [
-      [6.110574293841927, 125.17538426349432],  // CBD / Public Market
-      [6.108234567890123, 125.17098765432109],  // Rizal Avenue
-      [6.105892341234567, 125.16654320987654],  // Pendatun Avenue
-      [6.103543218765432, 125.16209876543210],  // King Solomon Institute
-      [6.101198765432109, 125.15765432109876],  // Labangal Elementary
-      [6.098850123456789, 125.15321098765432],  // Petronas Gas Station
-      [6.096501234567890, 125.14876543210987],  // Barrio Blaan
-      [6.094152345678901, 125.14432109876543],  // Labangal Proper
-      [6.091803456789012, 125.13987654321098],  // Bloomfields Subdivision
-      [6.089454567890123, 125.13543210987654],  // Labangal Terminal
-      [6.087105678901234, 125.13098765432109]   // Upper Labangal
-    ],
-    labels: [
-      "CBD / Public Market", "Rizal Avenue", "Pendatun Avenue",
-      "King Solomon Institute", "Labangal Elementary", "Petronas Gas Station",
-      "Barrio Blaan", "Labangal Proper", "Bloomfields Subdivision",
-      "Labangal Terminal", "Upper Labangal"
+      "Public Market", "City Hall", "Oval Plaza", "Bulaklakan",
+      "San Isidro", "Mabuhay Junction", "Habitat Phase I", "Habitat Phase II",
+      "Habitat Phase III", "Mabuhay Satellite Market"
     ]
   }
 };
-
-// ==================== PANEL DRAG FUNCTIONALITY ====================
 
 function initPanelDrag() {
   const panel = document.getElementById('control-panel');
   const handle = document.querySelector('.panel-handle');
   
-  if (!handle || window.innerWidth >= 1024) return; // Only on mobile
+  if (!handle || window.innerWidth >= 1024) return;
   
   let startY = 0;
   let currentY = 0;
@@ -171,12 +106,9 @@ function initPanelDrag() {
     currentY = touch.clientY;
     const deltaY = currentY - startY;
     
-    // Only allow downward drag to minimize
     if (deltaY > 0 && !panel.classList.contains('minimized')) {
       panel.style.transform = `translateY(${deltaY}px)`;
-    }
-    // Only allow upward drag to expand
-    else if (deltaY < 0 && panel.classList.contains('minimized')) {
+    } else if (deltaY < 0 && panel.classList.contains('minimized')) {
       panel.style.transform = `translateY(calc(100% - 60px + ${deltaY}px))`;
     }
   };
@@ -189,35 +121,31 @@ function initPanelDrag() {
     
     const deltaY = currentY - startY;
     
-    // If dragged more than 50px, toggle state
     if (Math.abs(deltaY) > 50) {
       if (deltaY > 0) {
         panel.classList.add('minimized');
+        panel.classList.remove('expanded');
       } else {
         panel.classList.remove('minimized');
       }
     }
   };
   
-  // Touch events
   handle.addEventListener('touchstart', handleStart, { passive: true });
   document.addEventListener('touchmove', handleMove, { passive: true });
   document.addEventListener('touchend', handleEnd);
   
-  // Mouse events (for testing on desktop)
   handle.addEventListener('mousedown', handleStart);
   document.addEventListener('mousemove', handleMove);
   document.addEventListener('mouseup', handleEnd);
   
-  // Also toggle on click/tap
   handle.addEventListener('click', (e) => {
     if (e.detail === 1) {
       panel.classList.toggle('minimized');
+      panel.classList.remove('expanded');
     }
   });
 }
-
-// ==================== UTILITIES ====================
 
 function showToast(message, duration = 2000) {
   const toast = document.getElementById('toast');
@@ -238,7 +166,6 @@ function formatLatLng(ll) {
   return `${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}`;
 }
 
-// Custom marker icons
 function createMarkerIcon(label, color) {
   return L.divIcon({
     html: `
@@ -263,8 +190,6 @@ function createMarkerIcon(label, color) {
     iconAnchor: [16, 16]
   });
 }
-
-// ==================== GEOCODING ====================
 
 async function reverseGeocode(latlng) {
   const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latlng.lat}&lon=${latlng.lng}`;
@@ -301,8 +226,6 @@ async function geocode(query) {
   }
 }
 
-// ==================== MAP INITIALIZATION ====================
-
 function initMap() {
   const map = L.map('map', {
     zoomControl: true,
@@ -316,11 +239,7 @@ function initMap() {
   }).addTo(map);
   
   state.map = map;
-
-  // Handle map clicks for trike mode
   map.on('click', handleMapClick);
-  
-  // Fix map size
   setTimeout(() => map.invalidateSize(), 100);
   
   return map;
@@ -348,7 +267,6 @@ function handleMapClick(e) {
     state.trike.endMarker.on('dragend', updateTrikeRoute);
     showToast('🎯 Calculating route...');
   } else {
-    // Move markers
     state.trike.startMarker.setLatLng(state.trike.endMarker.getLatLng());
     state.trike.endMarker.setLatLng(e.latlng);
     showToast('🔄 Route updated');
@@ -356,8 +274,6 @@ function handleMapClick(e) {
   
   updateTrikeRoute();
 }
-
-// ==================== TRIKE MODE ====================
 
 async function updateTrikeRoute() {
   const { startMarker, endMarker } = state.trike;
@@ -419,12 +335,22 @@ async function updateTrikeRoute() {
       });
       
       displayFare(fareData);
+      expandPanelOnMobile();
     });
 
     state.trike.routeControl.on('routingerror', () => {
       hideLoading();
       showToast('❌ Could not find route');
     });
+  }
+}
+
+function expandPanelOnMobile() {
+  if (window.innerWidth < 1024) {
+    const panel = document.getElementById('control-panel');
+    panel.classList.remove('minimized');
+    panel.classList.add('expanded');
+    showToast('📊 Fare calculated!', 1500);
   }
 }
 
@@ -438,22 +364,13 @@ function displayFare(fareData) {
   
   fareDisplay.textContent = `₱${fareData.fare}`;
   
-  if (fareData.discountType !== 'none') {
-    // Show breakdown
+  if (fareData.discountType === 'special') {
     fareBreakdown.style.display = 'flex';
     regularFareEl.textContent = `₱${fareData.baseFare}`;
     discountAmountEl.textContent = `-₱${fareData.discountAmount}`;
-    
-    const discountNames = {
-      pwd: 'PWD Discount (20%)',
-      senior: 'Senior Citizen Discount (20%)',
-      student: 'Student Discount (20%)'
-    };
-    discountLabelEl.textContent = discountNames[fareData.discountType] || 'Discount (20%)';
-    
+    discountLabelEl.textContent = 'Special Discount (20%)';
     fareFormulaEl.textContent = '₱12 base (4km) + ₱0.80/km (with discount)';
   } else {
-    // Hide breakdown
     fareBreakdown.style.display = 'none';
     fareFormulaEl.textContent = '₱15 base (4km) + ₱1/km';
   }
@@ -477,7 +394,6 @@ function clearTrikeMarkers() {
   }
   clearTrikeRoute();
   
-  // Clear inputs
   document.getElementById('search-start').value = '';
   document.getElementById('search-end').value = '';
   document.getElementById('start-display').textContent = 'Tap map or search';
@@ -485,9 +401,10 @@ function clearTrikeMarkers() {
   document.getElementById('distance-display').textContent = '—';
   document.getElementById('fare-display').textContent = '₱—';
   document.getElementById('fare-breakdown').style.display = 'none';
+  
+  const panel = document.getElementById('control-panel');
+  panel.classList.remove('expanded');
 }
-
-// ==================== BUS/JEEP MODE ====================
 
 function showRoute(routeKey) {
   clearBusJeepRoute();
@@ -497,13 +414,12 @@ function showRoute(routeKey) {
 
   state.busjeep.selectedRoute = routeKey;
 
-  // Add markers
   route.stops.forEach((coords, idx) => {
     const marker = L.circleMarker(coords, {
       radius: 8,
-      color: '#ffffff',
+      color: route.color === '#ffffff' ? '#000000' : '#ffffff',
       fillColor: route.color,
-      fillOpacity: 1,
+      fillOpacity: route.color === '#ffffff' ? 0.9 : 1,
       weight: 3
     }).addTo(state.map);
     
@@ -515,16 +431,15 @@ function showRoute(routeKey) {
     state.busjeep.markers.push(marker);
   });
 
-  // Add route line
   const waypoints = route.stops.map(([lat, lng]) => L.latLng(lat, lng));
   
   state.busjeep.routeControl = L.Routing.control({
     waypoints,
     lineOptions: {
       styles: [{
-        color: route.color,
+        color: route.color === '#ffffff' ? '#cccccc' : route.color,
         weight: 5,
-        opacity: 0.8
+        opacity: route.color === '#ffffff' ? 1 : 0.8
       }]
     },
     router: L.Routing.osrmv1({
@@ -537,7 +452,6 @@ function showRoute(routeKey) {
     show: false
   }).addTo(state.map);
 
-  // Show route detail
   showRouteDetail(route);
   showToast(`🚌 ${route.name} selected`);
 }
@@ -572,14 +486,11 @@ function clearBusJeepRoute() {
   document.getElementById('route-detail').style.display = 'none';
 }
 
-// ==================== MODE SWITCHING ====================
-
 function switchMode(mode) {
   if (state.currentMode === mode) return;
   
   state.currentMode = mode;
   
-  // Update UI
   document.querySelectorAll('.mode-btn').forEach(btn => {
     const isActive = btn.dataset.mode === mode;
     btn.classList.toggle('active', isActive);
@@ -590,7 +501,6 @@ function switchMode(mode) {
     view.classList.toggle('active', view.dataset.view === mode);
   });
   
-  // Clear map elements
   if (mode !== 'trike') {
     clearTrikeMarkers();
   }
@@ -598,57 +508,55 @@ function switchMode(mode) {
     clearBusJeepRoute();
   }
   
+  const panel = document.getElementById('control-panel');
+  panel.classList.remove('expanded');
+  
   setTimeout(() => state.map.invalidateSize(), 100);
 }
-
-// ==================== DISCOUNT SELECTION ====================
 
 function selectDiscount(discountType) {
   if (state.discountType === discountType) return;
   
   state.discountType = discountType;
   
-  // Update UI
   document.querySelectorAll('.discount-btn').forEach(btn => {
     const isActive = btn.dataset.discount === discountType;
     btn.classList.toggle('active', isActive);
   });
   
-  // Recalculate fare if route exists
   if (state.trike.startMarker && state.trike.endMarker) {
     updateTrikeRoute();
   }
   
   const discountNames = {
     none: 'Regular fare',
-    pwd: 'PWD discount applied',
-    senior: 'Senior citizen discount applied',
-    student: 'Student discount applied'
+    special: 'Special discount applied (20% off)'
   };
   showToast(discountNames[discountType] || 'Fare updated');
 }
 
-// ==================== MATRIX TABS ====================
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+  showToast(isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled');
+}
 
 function initMatrixTabs() {
   document.querySelectorAll('.matrix-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       const cluster = tab.dataset.cluster;
       
-      // Update active tab
       document.querySelectorAll('.matrix-tab').forEach(t => {
         t.classList.toggle('active', t.dataset.cluster === cluster);
       });
       
-      // Update active view
       document.querySelectorAll('.matrix-view').forEach(view => {
         view.classList.toggle('active', view.dataset.cluster === cluster);
       });
     });
   });
 }
-
-// ==================== GEOLOCATION ====================
 
 function useCurrentLocation() {
   if (!navigator.geolocation) {
@@ -685,33 +593,31 @@ function useCurrentLocation() {
   );
 }
 
-// ==================== EVENT LISTENERS ====================
-
 function initEventListeners() {
-  // Mode switcher
   document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       switchMode(btn.dataset.mode);
     });
   });
 
-  // Discount selector
   document.querySelectorAll('.discount-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       selectDiscount(btn.dataset.discount);
     });
   });
 
-  // Reset button (in quick actions)
+  const darkModeToggle = document.getElementById('dark-mode-toggle');
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+  }
+
   document.getElementById('reset-trike').addEventListener('click', () => {
     clearTrikeMarkers();
     showToast('🔄 Reset');
   });
 
-  // Use location button
   document.getElementById('use-location').addEventListener('click', useCurrentLocation);
 
-  // Search inputs
   const searchStart = document.getElementById('search-start');
   const searchEnd = document.getElementById('search-end');
 
@@ -759,21 +665,17 @@ function initEventListeners() {
     }
   });
 
-  // Route cards
   document.querySelectorAll('.route-card').forEach(card => {
     card.addEventListener('click', () => {
       showRoute(card.dataset.route);
     });
   });
 
-  // Clear route button
   document.getElementById('clear-route').addEventListener('click', () => {
     clearBusJeepRoute();
     showToast('Route cleared');
   });
 }
-
-// ==================== INITIALIZATION ====================
 
 function init() {
   initMap();
@@ -781,15 +683,18 @@ function init() {
   initPanelDrag();
   initMatrixTabs();
   
+  const darkMode = localStorage.getItem('darkMode');
+  if (darkMode === 'enabled') {
+    document.body.classList.add('dark-mode');
+  }
+  
   setTimeout(() => {
     showToast('👋 Welcome to GenSan Fare!', 3000);
   }, 500);
 }
 
-// Start app
 document.addEventListener('DOMContentLoaded', init);
 
-// Handle window resize
 window.addEventListener('resize', () => {
   if (state.map) {
     state.map.invalidateSize();
