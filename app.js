@@ -396,8 +396,10 @@ function clearTrikeMarkers() {
   
   document.getElementById('search-start').value = '';
   document.getElementById('search-end').value = '';
-  document.getElementById('start-display').textContent = 'Tap map or search';
-  document.getElementById('end-display').textContent = 'Tap map or search';
+  const startLbl = document.getElementById('start-display');
+  const endLbl = document.getElementById('end-display');
+  if (startLbl) { startLbl.textContent = 'Tap map or search'; startLbl.style.visibility = ''; }
+  if (endLbl)   { endLbl.textContent   = 'Tap map or search'; endLbl.style.visibility   = ''; }
   document.getElementById('distance-display').textContent = '—';
   document.getElementById('fare-display').textContent = '₱—';
   document.getElementById('fare-breakdown').style.display = 'none';
@@ -620,6 +622,16 @@ function initEventListeners() {
 
   const searchStart = document.getElementById('search-start');
   const searchEnd = document.getElementById('search-end');
+
+  // Hide floating label on focus; restore on blur only if input is empty
+  [['search-start','start-display'],['search-end','end-display']].forEach(([inputId, labelId]) => {
+    const inp = document.getElementById(inputId);
+    const lbl = document.getElementById(labelId);
+    if (!inp || !lbl) return;
+    inp.addEventListener('focus', () => { lbl.style.visibility = 'hidden'; });
+    inp.addEventListener('blur',  () => { if (!inp.value) lbl.style.visibility = ''; });
+    inp.addEventListener('input', () => { lbl.style.visibility = inp.value ? 'hidden' : ''; });
+  });
 
   searchStart.addEventListener('keypress', async (e) => {
     if (e.key !== 'Enter') return;
