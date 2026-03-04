@@ -741,10 +741,12 @@ body.dark-mode .toggle-icon::before {
 .input-content {
   flex: 1;
   min-width: 0;
-  position: relative;
+  cursor: text;
 }
 
+/* Input hidden by default; JS shows it on focus, hides on blur */
 .location-input {
+  display: none;
   width: 100%;
   border: none;
   background: transparent;
@@ -753,34 +755,31 @@ body.dark-mode .toggle-icon::before {
   font-weight: 500;
   color: var(--gray-900);
   outline: none;
+}
+
+.location-input.is-active {
   display: block;
 }
 
 .location-input::placeholder {
-  color: transparent; /* hide native placeholder — we use .input-label instead */
+  color: var(--gray-400);
 }
 
-/* The floating label acts as the placeholder */
+/* Label shows address or placeholder text - never overlaps with input */
 .input-label {
+  display: block;
   font-size: 14px;
-  color: var(--gray-500);
-  user-select: none;
-  pointer-events: none;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 0;
+  color: var(--gray-700);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
-  transition: opacity var(--transition);
+  line-height: 1.4;
+  cursor: text;
 }
 
-/* Hide label when input is focused OR has any typed content */
-.location-input:focus + .input-label,
-.location-input:not([value=""]) + .input-label {
-  display: none;
+.input-label.is-placeholder {
+  color: var(--gray-400);
 }
 
 .connection-line {
