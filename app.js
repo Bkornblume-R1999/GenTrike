@@ -285,11 +285,15 @@ async function updateTrikeRoute() {
   if (startMarker) {
     const addr = await reverseGeocode(startMarker.getLatLng());
     startEl.textContent = addr;
+    startEl.classList.remove('is-placeholder');
+    startEl.style.display = '';
   }
 
   if (endMarker) {
     const addr = await reverseGeocode(endMarker.getLatLng());
     endEl.textContent = addr;
+    endEl.classList.remove('is-placeholder');
+    endEl.style.display = '';
   }
 
   if (startMarker && endMarker) {
@@ -398,8 +402,12 @@ function clearTrikeMarkers() {
   document.getElementById('search-end').value = '';
   const startLbl = document.getElementById('start-display');
   const endLbl = document.getElementById('end-display');
-  if (startLbl) { startLbl.textContent = 'Tap map or search'; startLbl.style.visibility = ''; }
-  if (endLbl)   { endLbl.textContent   = 'Tap map or search'; endLbl.style.visibility   = ''; }
+  const startInp = document.getElementById('search-start');
+  const endInp   = document.getElementById('search-end');
+  if (startLbl) { startLbl.textContent = 'Tap map or search'; startLbl.classList.add('is-placeholder'); startLbl.style.display = ''; }
+  if (endLbl)   { endLbl.textContent   = 'Tap map or search'; endLbl.classList.add('is-placeholder');   endLbl.style.display   = ''; }
+  if (startInp) startInp.classList.remove('is-active');
+  if (endInp)   endInp.classList.remove('is-active');
   document.getElementById('distance-display').textContent = '—';
   document.getElementById('fare-display').textContent = '₱—';
   document.getElementById('fare-breakdown').style.display = 'none';
@@ -623,15 +631,33 @@ function initEventListeners() {
   const searchStart = document.getElementById('search-start');
   const searchEnd = document.getElementById('search-end');
 
-  // Hide floating label on focus; restore on blur only if input is empty
-  [['search-start','start-display'],['search-end','end-display']].forEach(([inputId, labelId]) => {
+  // Toggle input/label: click label -> show input; blur -> hide input, show label with address
+  function setupSearchField(inputId, labelId) {
     const inp = document.getElementById(inputId);
     const lbl = document.getElementById(labelId);
     if (!inp || !lbl) return;
-    inp.addEventListener('focus', () => { lbl.style.visibility = 'hidden'; });
-    inp.addEventListener('blur',  () => { if (!inp.value) lbl.style.visibility = ''; });
-    inp.addEventListener('input', () => { lbl.style.visibility = inp.value ? 'hidden' : ''; });
-  });
+    // Clicking the label activates the input
+    lbl.addEventListener('click', () => {
+      lbl.style.display = 'none';
+      inp.classList.add('is-active');
+      inp.focus();
+      inp.value = '';
+    });
+    // Also activate when clicking the wrapper area
+    inp.closest && inp.closest('.input-wrapper') && inp.closest('.input-wrapper').addEventListener('click', () => {
+      lbl.style.display = 'none';
+      inp.classList.add('is-active');
+      inp.focus();
+    });
+    // On blur: hide input, show label with whatever address is set
+    inp.addEventListener('blur', () => {
+      inp.classList.remove('is-active');
+      lbl.style.display = '';
+      inp.value = '';
+    });
+  }
+  setupSearchField('search-start', 'start-display');
+  setupSearchField('search-end', 'end-display');
 
   searchStart.addEventListener('keypress', async (e) => {
     if (e.key !== 'Enter') return;
@@ -691,6 +717,11 @@ function initEventListeners() {
 
 function init() {
   initMap();
+  // Mark initial labels as placeholders so they render in grey
+  ['start-display','end-display'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('is-placeholder');
+  });
   initEventListeners();
   initPanelDrag();
   initMatrixTabs();
