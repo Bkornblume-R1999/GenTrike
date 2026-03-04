@@ -742,8 +742,6 @@ body.dark-mode .toggle-icon::before {
   flex: 1;
   min-width: 0;
   position: relative;
-  display: flex;
-  align-items: center;
 }
 
 .location-input {
@@ -755,14 +753,14 @@ body.dark-mode .toggle-icon::before {
   font-weight: 500;
   color: var(--gray-900);
   outline: none;
-  position: relative;
-  z-index: 2;
+  display: block;
 }
 
 .location-input::placeholder {
-  color: var(--gray-400);
+  color: transparent; /* hide native placeholder — we use .input-label instead */
 }
 
+/* The floating label acts as the placeholder */
 .input-label {
   font-size: 14px;
   color: var(--gray-500);
@@ -772,14 +770,17 @@ body.dark-mode .toggle-icon::before {
   top: 50%;
   transform: translateY(-50%);
   left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
   transition: opacity var(--transition);
-  z-index: 1;
 }
 
-/* Hide the label when input has content or is focused */
-.location-input:focus ~ .input-label,
-.location-input:not(:placeholder-shown) ~ .input-label {
-  opacity: 0;
+/* Hide label when input is focused OR has any typed content */
+.location-input:focus + .input-label,
+.location-input:not([value=""]) + .input-label {
+  display: none;
 }
 
 .connection-line {
