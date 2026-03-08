@@ -191,39 +191,449 @@ function createMarkerIcon(label, color) {
   });
 }
 
-async function reverseGeocode(latlng) {
-  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latlng.lat}&lon=${latlng.lng}`;
+// ─── GENSAN KEY PLACES DATABASE ───────────────────────────────────────────────
+const GENSAN_PLACES = [
+  // Malls & Commercial
+  { name: 'SM City General Santos', lat: 6.1152, lng: 125.1856, tags: ['sm', 'mall', 'shopping'] },
+  { name: 'KCC Mall of GenSan', lat: 6.1172, lng: 125.1858, tags: ['kcc', 'mall', 'robinson'] },
+  { name: 'Robinsons Place GenSan', lat: 6.1185, lng: 125.1902, tags: ['robinsons', 'mall'] },
+  { name: 'Gaisano Mall General Santos', lat: 6.1090, lng: 125.1734, tags: ['gaisano', 'mall'] },
+  // Hospitals
+  { name: 'Mindanao Medical Center', lat: 6.1078, lng: 125.1774, tags: ['hospital', 'mmc', 'medical'] },
+  { name: 'South Cotabato Provincial Hospital', lat: 6.1071, lng: 125.1700, tags: ['hospital', 'provincial'] },
+  { name: 'Notre Dame Hospital', lat: 6.1041, lng: 125.1786, tags: ['hospital', 'notre dame'] },
+  { name: 'General Santos Doctors Hospital', lat: 6.1101, lng: 125.1780, tags: ['hospital', 'doctors'] },
+  // Schools / Universities
+  { name: 'Notre Dame of Dadiangas University', lat: 6.1050, lng: 125.1786, tags: ['nddu', 'university', 'college', 'notre dame'] },
+  { name: 'University of Southern Mindanao GenSan', lat: 6.1100, lng: 125.1701, tags: ['usm', 'university', 'college'] },
+  { name: 'General Santos City National High School', lat: 6.1040, lng: 125.1762, tags: ['high school', 'nhs'] },
+  { name: 'Notre Dame of Marbel University', lat: 6.1055, lng: 125.1782, tags: ['ndmu', 'marbel', 'university'] },
+  { name: 'STI College General Santos', lat: 6.1087, lng: 125.1797, tags: ['sti', 'college'] },
+  // Transport / Terminals
+  { name: 'General Santos Airport (Francisco Bangoy)', lat: 6.0583, lng: 125.0959, tags: ['airport', 'bangoy', 'flights'] },
+  { name: 'Bulaong Bus Terminal', lat: 6.1186, lng: 125.1610, tags: ['bus', 'terminal', 'bulaong'] },
+  { name: 'Tambler Bus Terminal', lat: 6.0831, lng: 125.1353, tags: ['bus', 'terminal', 'tambler'] },
+  { name: 'Husky Terminal', lat: 6.1131, lng: 125.1641, tags: ['terminal', 'husky'] },
+  // Government
+  { name: 'City Hall General Santos', lat: 6.1082, lng: 125.1728, tags: ['city hall', 'government'] },
+  { name: 'Hall of Justice General Santos', lat: 6.1073, lng: 125.1742, tags: ['hall of justice', 'court', 'government'] },
+  { name: 'GenSan City Police Station', lat: 6.1085, lng: 125.1731, tags: ['police', 'pnp', 'station'] },
+  // Markets
+  { name: 'GenSan Public Market (CBD)', lat: 6.1073, lng: 125.1715, tags: ['public market', 'palengke', 'cbd'] },
+  { name: 'Lagao Public Market', lat: 6.1276, lng: 125.1963, tags: ['lagao', 'market', 'palengke'] },
+  { name: 'Bawing Public Market', lat: 6.0852, lng: 125.1399, tags: ['bawing', 'market'] },
+  // Parks & Landmarks
+  { name: 'Oval Plaza General Santos', lat: 6.1082, lng: 125.1717, tags: ['oval', 'plaza', 'park', 'landmark'] },
+  { name: 'People\'s Park GenSan', lat: 6.1084, lng: 125.1718, tags: ['park', 'people\'s'] },
+  { name: 'GenSan Fish Port Complex', lat: 6.0954, lng: 125.1655, tags: ['fish port', 'port', 'fishing'] },
+  { name: 'Manny Pacquiao Museum', lat: 6.1078, lng: 125.1720, tags: ['pacquiao', 'museum', 'landmark'] },
+  // Barangays / Districts
+  { name: 'Barangay Lagao', lat: 6.1276, lng: 125.1963, tags: ['lagao', 'barangay'] },
+  { name: 'Barangay Labangal', lat: 6.0987, lng: 125.1593, tags: ['labangal', 'barangay'] },
+  { name: 'Barangay Calumpang', lat: 6.1048, lng: 125.1683, tags: ['calumpang', 'barangay'] },
+  { name: 'Barangay Bula', lat: 6.1150, lng: 125.1600, tags: ['bula', 'barangay'] },
+  { name: 'Barangay Dadiangas West', lat: 6.1087, lng: 125.1706, tags: ['dadiangas', 'west', 'barangay'] },
+  { name: 'Barangay Tambler', lat: 6.0741, lng: 125.1252, tags: ['tambler', 'barangay'] },
+  { name: 'Barangay Apopong', lat: 6.1247, lng: 125.1541, tags: ['apopong', 'barangay'] },
+  { name: 'Barangay Buayan', lat: 6.1318, lng: 125.1724, tags: ['buayan', 'barangay'] },
+  // Hotels
+  { name: 'Hotel Heneral Santos', lat: 6.1076, lng: 125.1718, tags: ['hotel', 'heneral'] },
+  { name: 'Ceresita Fine Hotel Labangal', lat: 6.0985, lng: 125.1569, tags: ['hotel', 'ceresita', 'labangal'] },
+  { name: 'Phela Grande Convention Center', lat: 6.1143, lng: 125.1852, tags: ['hotel', 'phela', 'convention'] },
+  // Fast Food / Landmarks
+  { name: 'Jollibee Pioneer Avenue', lat: 6.1073, lng: 125.1767, tags: ['jollibee', 'pioneer'] },
+  { name: 'Pioneer Avenue', lat: 6.1073, lng: 125.1757, tags: ['pioneer', 'avenue', 'street'] },
+  { name: 'National Highway GenSan', lat: 6.1062, lng: 125.1654, tags: ['national highway', 'highway'] },
+];
+
+// ─── SEARCH HISTORY ────────────────────────────────────────────────────────────
+const MAX_HISTORY = 8;
+
+function getSearchHistory() {
   try {
-    const res = await fetch(url);
+    return JSON.parse(localStorage.getItem('geoGensan_searchHistory') || '[]');
+  } catch { return []; }
+}
+
+function addToSearchHistory(place) {
+  let history = getSearchHistory();
+  // Remove duplicates
+  history = history.filter(h => h.name !== place.name);
+  history.unshift({ name: place.name, lat: place.lat, lng: place.lng });
+  if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
+  localStorage.setItem('geoGensan_searchHistory', JSON.stringify(history));
+}
+
+// ─── AUTOCOMPLETE ──────────────────────────────────────────────────────────────
+function searchLocalPlaces(query) {
+  const q = query.toLowerCase().trim();
+  if (!q) return [];
+  
+  const scored = GENSAN_PLACES.map(place => {
+    const nameLower = place.name.toLowerCase();
+    let score = 0;
+    if (nameLower.startsWith(q)) score = 100;
+    else if (nameLower.includes(q)) score = 70;
+    else if (place.tags.some(t => t.includes(q))) score = 50;
+    else if (place.tags.some(t => q.includes(t))) score = 30;
+    return { ...place, score };
+  }).filter(p => p.score > 0).sort((a, b) => b.score - a.score);
+  
+  return scored.slice(0, 5);
+}
+
+function createAutocompleteDropdown(inputEl, onSelect) {
+  const wrapper = inputEl.closest('.input-content') || inputEl.parentElement;
+  
+  // Remove old dropdown
+  const old = wrapper.querySelector('.autocomplete-dropdown');
+  if (old) old.remove();
+  
+  const query = inputEl.value.trim();
+  const history = getSearchHistory();
+  
+  let results = [];
+  if (!query) {
+    // Show recent searches
+    results = history.map(h => ({ ...h, isHistory: true }));
+  } else {
+    results = searchLocalPlaces(query);
+  }
+  
+  if (!results.length) return;
+  
+  const dropdown = document.createElement('div');
+  dropdown.className = 'autocomplete-dropdown';
+  
+  if (!query && results.length) {
+    const header = document.createElement('div');
+    header.className = 'autocomplete-header';
+    header.textContent = '🕐 Recent Searches';
+    dropdown.appendChild(header);
+  }
+  
+  results.forEach(place => {
+    const item = document.createElement('div');
+    item.className = 'autocomplete-item';
+    item.innerHTML = `
+      <span class="autocomplete-icon">${place.isHistory ? '🕐' : '📍'}</span>
+      <span class="autocomplete-name">${place.name}</span>
+    `;
+    item.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      onSelect(place);
+      dropdown.remove();
+    });
+    dropdown.appendChild(item);
+  });
+  
+  wrapper.style.position = 'relative';
+  wrapper.appendChild(dropdown);
+}
+
+function removeAutocomplete(inputEl) {
+  const wrapper = inputEl.closest('.input-content') || inputEl.parentElement;
+  const dd = wrapper.querySelector('.autocomplete-dropdown');
+  if (dd) dd.remove();
+}
+
+async function reverseGeocode(latlng) {
+  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latlng.lat}&lon=${latlng.lng}&zoom=18&addressdetails=1`;
+  try {
+    const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
     const data = await res.json();
     const addr = data.address || {};
     
-    const parts = [];
-    if (addr.road) parts.push(addr.road);
-    if (addr.suburb) parts.push(addr.suburb);
+    // Try to get a human-friendly name from display_name parts
+    const name = data.name || '';
+    const road = addr.road || addr.pedestrian || addr.footway || '';
+    const suburb = addr.suburb || addr.village || addr.neighbourhood || addr.quarter || '';
+    const district = addr.city_district || addr.district || '';
     
-    return parts.length > 0 ? parts.join(', ') : formatLatLng(latlng);
+    const parts = [];
+    if (name && name !== road) parts.push(name);
+    if (road) parts.push(road);
+    if (suburb) parts.push(suburb);
+    else if (district) parts.push(district);
+    
+    if (parts.length > 0) return parts.slice(0, 2).join(', ');
+    
+    // Fall back to display_name first two segments
+    if (data.display_name) {
+      const segments = data.display_name.split(',').map(s => s.trim()).filter(Boolean);
+      return segments.slice(0, 2).join(', ');
+    }
+    
+    return formatLatLng(latlng);
   } catch (error) {
     console.error('Reverse geocoding error:', error);
     return formatLatLng(latlng);
   }
 }
 
-async function geocode(query) {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', General Santos City')}`;
+// GenSan center + ~30km radius bounding box
+const GENSAN_VIEWBOX = '124.8,5.85,125.45,6.38';
+
+async function geocodeWithNominatim(query) {
+  // First try with GenSan context + expanded viewbox
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', General Santos City, Philippines')}&viewbox=${GENSAN_VIEWBOX}&bounded=0&limit=5&addressdetails=1&namedetails=1`;
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
     const data = await res.json();
     if (data.length > 0) {
-      return L.latLng(data[0].lat, data[0].lon);
+      return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), name: data[0].display_name.split(',')[0] };
     }
-    showToast('❌ Location not found');
+    // Try without GenSan context but still biased to the region
+    const url2 = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${GENSAN_VIEWBOX}&bounded=0&limit=5`;
+    const res2 = await fetch(url2, { headers: { 'Accept-Language': 'en' } });
+    const data2 = await res2.json();
+    if (data2.length > 0) {
+      return { lat: parseFloat(data2[0].lat), lng: parseFloat(data2[0].lon), name: data2[0].display_name.split(',')[0] };
+    }
     return null;
   } catch (error) {
     console.error('Geocoding error:', error);
-    showToast('❌ Search failed');
     return null;
   }
+}
+
+async function geocode(query) {
+  // First: check local places database
+  const localResults = searchLocalPlaces(query);
+  if (localResults.length > 0 && localResults[0].score >= 70) {
+    const place = localResults[0];
+    addToSearchHistory(place);
+    return L.latLng(place.lat, place.lng);
+  }
+  
+  // Then: try Nominatim
+  const result = await geocodeWithNominatim(query);
+  if (result) {
+    addToSearchHistory({ name: result.name || query, lat: result.lat, lng: result.lng });
+    return L.latLng(result.lat, result.lng);
+  }
+  
+  showToast('❌ Location not found');
+  return null;
+}
+
+// ─── COMPLAINT SYSTEM ──────────────────────────────────────────────────────────
+const REPORTS_KEY = 'geoGensan_reports';
+const LAST_REPORT_KEY = 'geoGensan_lastReportTime';
+const MAX_REPORTS = 100;
+const COOLDOWN_MS = 2 * 60 * 60 * 1000; // 2 hours
+
+function getReports() {
+  try {
+    return JSON.parse(localStorage.getItem(REPORTS_KEY) || '[]');
+  } catch { return []; }
+}
+
+function saveReports(reports) {
+  localStorage.setItem(REPORTS_KEY, JSON.stringify(reports));
+}
+
+function addReport(plate, type, description) {
+  let reports = getReports();
+  const newReport = {
+    id: Date.now(),
+    plate: plate.toUpperCase(),
+    date: new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' }),
+    type,
+    description
+  };
+  reports.unshift(newReport);
+  if (reports.length > MAX_REPORTS) {
+    reports = reports.slice(0, MAX_REPORTS); // Remove oldest (end of array since newest at front)
+  }
+  saveReports(reports);
+}
+
+function canSubmitReport() {
+  const last = parseInt(localStorage.getItem(LAST_REPORT_KEY) || '0');
+  return Date.now() - last >= COOLDOWN_MS;
+}
+
+function getRemainingCooldown() {
+  const last = parseInt(localStorage.getItem(LAST_REPORT_KEY) || '0');
+  const remaining = COOLDOWN_MS - (Date.now() - last);
+  return remaining > 0 ? remaining : 0;
+}
+
+function formatCooldown(ms) {
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
+
+let cooldownInterval = null;
+
+function initComplaintModal() {
+  const openBtn = document.getElementById('open-complaint');
+  const modal = document.getElementById('complaint-modal');
+  const closeBtn = document.getElementById('close-complaint');
+  const submitBtn = document.getElementById('submit-complaint');
+  const descTextarea = document.getElementById('complaint-desc');
+  const descCount = document.getElementById('desc-count');
+
+  openBtn.addEventListener('click', () => {
+    modal.style.display = 'flex';
+    updateCooldownUI();
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+    clearInterval(cooldownInterval);
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+      clearInterval(cooldownInterval);
+    }
+  });
+
+  descTextarea.addEventListener('input', () => {
+    descCount.textContent = descTextarea.value.length;
+  });
+
+  submitBtn.addEventListener('click', () => {
+    const plate = document.getElementById('complaint-plate').value.trim();
+    const type = document.getElementById('complaint-type').value;
+    const desc = document.getElementById('complaint-desc').value.trim();
+
+    if (!plate) { showToast('❌ Please enter a plate number'); return; }
+    if (!type) { showToast('❌ Please select a report type'); return; }
+    if (!desc) { showToast('❌ Please enter a description'); return; }
+    if (!canSubmitReport()) { showToast('⏳ Please wait before submitting again'); return; }
+
+    addReport(plate, type, desc);
+    localStorage.setItem(LAST_REPORT_KEY, Date.now().toString());
+
+    // Reset form
+    document.getElementById('complaint-plate').value = '';
+    document.getElementById('complaint-type').value = '';
+    document.getElementById('complaint-desc').value = '';
+    descCount.textContent = '0';
+
+    modal.style.display = 'none';
+    showToast('✅ Report submitted successfully!', 3000);
+    updateCooldownUI();
+  });
+}
+
+function updateCooldownUI() {
+  const notice = document.getElementById('complaint-cooldown-notice');
+  const formBody = document.getElementById('complaint-form-body');
+  const timerEl = document.getElementById('cooldown-timer');
+  const submitBtn = document.getElementById('submit-complaint');
+
+  clearInterval(cooldownInterval);
+
+  if (!canSubmitReport()) {
+    notice.style.display = 'flex';
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.5';
+
+    const tick = () => {
+      const rem = getRemainingCooldown();
+      if (rem <= 0) {
+        clearInterval(cooldownInterval);
+        notice.style.display = 'none';
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        return;
+      }
+      timerEl.textContent = formatCooldown(rem);
+    };
+    tick();
+    cooldownInterval = setInterval(tick, 1000);
+  } else {
+    notice.style.display = 'none';
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '1';
+  }
+}
+
+// ─── ADMIN PANEL ───────────────────────────────────────────────────────────────
+const ADMIN_PASSWORD = '00000000';
+
+function initAdminPanel() {
+  const openBtn = document.getElementById('open-admin');
+  const loginModal = document.getElementById('admin-login-modal');
+  const panelModal = document.getElementById('admin-panel-modal');
+  const closeLoginBtn = document.getElementById('close-admin-login');
+  const closePanelBtn = document.getElementById('close-admin-panel');
+  const loginBtn = document.getElementById('admin-login-btn');
+  const passwordInput = document.getElementById('admin-password');
+  const clearBtn = document.getElementById('clear-all-reports');
+
+  openBtn.addEventListener('click', () => {
+    passwordInput.value = '';
+    document.getElementById('admin-error').style.display = 'none';
+    loginModal.style.display = 'flex';
+    setTimeout(() => passwordInput.focus(), 100);
+  });
+
+  closeLoginBtn.addEventListener('click', () => { loginModal.style.display = 'none'; });
+  loginModal.addEventListener('click', (e) => { if (e.target === loginModal) loginModal.style.display = 'none'; });
+
+  closePanelBtn.addEventListener('click', () => { panelModal.style.display = 'none'; });
+  panelModal.addEventListener('click', (e) => { if (e.target === panelModal) panelModal.style.display = 'none'; });
+
+  passwordInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') loginBtn.click();
+  });
+
+  loginBtn.addEventListener('click', () => {
+    const pwd = passwordInput.value;
+    if (pwd === ADMIN_PASSWORD) {
+      loginModal.style.display = 'none';
+      renderAdminTable();
+      panelModal.style.display = 'flex';
+    } else {
+      document.getElementById('admin-error').style.display = 'block';
+      passwordInput.value = '';
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (confirm('Clear ALL reports? This cannot be undone.')) {
+      saveReports([]);
+      renderAdminTable();
+      showToast('🗑️ All reports cleared');
+    }
+  });
+}
+
+function renderAdminTable() {
+  const tbody = document.getElementById('reports-tbody');
+  const countLabel = document.getElementById('report-count-label');
+  const reports = getReports();
+
+  countLabel.textContent = `${reports.length} / ${MAX_REPORTS} reports`;
+
+  if (reports.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No reports found.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = reports.map((r, i) => `
+    <tr>
+      <td class="report-num">${i + 1}</td>
+      <td class="report-plate">${escapeHtml(r.plate)}</td>
+      <td class="report-date">${escapeHtml(r.date)}</td>
+      <td><span class="report-type-badge">${escapeHtml(r.type)}</span></td>
+      <td class="report-desc">${escapeHtml(r.description)}</td>
+    </tr>
+  `).join('');
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function initMap() {
@@ -659,11 +1069,48 @@ function initEventListeners() {
   setupSearchField('search-start', 'start-display');
   setupSearchField('search-end', 'end-display');
 
+  // Autocomplete for start input
+  searchStart.addEventListener('input', () => {
+    createAutocompleteDropdown(searchStart, (place) => {
+      const latlng = L.latLng(place.lat, place.lng);
+      if (state.trike.startMarker) {
+        state.trike.startMarker.setLatLng(latlng);
+      } else {
+        state.trike.startMarker = L.marker(latlng, {
+          draggable: true,
+          icon: createMarkerIcon('A', '#10b981')
+        }).addTo(state.map);
+        state.trike.startMarker.on('dragend', updateTrikeRoute);
+      }
+      state.map.setView(latlng, 15);
+      updateTrikeRoute();
+      searchStart.blur();
+    });
+  });
+
+  searchStart.addEventListener('focus', () => {
+    createAutocompleteDropdown(searchStart, (place) => {
+      const latlng = L.latLng(place.lat, place.lng);
+      if (state.trike.startMarker) {
+        state.trike.startMarker.setLatLng(latlng);
+      } else {
+        state.trike.startMarker = L.marker(latlng, {
+          draggable: true,
+          icon: createMarkerIcon('A', '#10b981')
+        }).addTo(state.map);
+        state.trike.startMarker.on('dragend', updateTrikeRoute);
+      }
+      state.map.setView(latlng, 15);
+      updateTrikeRoute();
+      searchStart.blur();
+    });
+  });
+
   searchStart.addEventListener('keypress', async (e) => {
     if (e.key !== 'Enter') return;
     const query = e.target.value.trim();
     if (!query) return;
-
+    removeAutocomplete(searchStart);
     const latlng = await geocode(query);
     if (latlng) {
       if (state.trike.startMarker) {
@@ -681,11 +1128,48 @@ function initEventListeners() {
     }
   });
 
+  // Autocomplete for end input
+  searchEnd.addEventListener('input', () => {
+    createAutocompleteDropdown(searchEnd, (place) => {
+      const latlng = L.latLng(place.lat, place.lng);
+      if (state.trike.endMarker) {
+        state.trike.endMarker.setLatLng(latlng);
+      } else {
+        state.trike.endMarker = L.marker(latlng, {
+          draggable: true,
+          icon: createMarkerIcon('B', '#ef4444')
+        }).addTo(state.map);
+        state.trike.endMarker.on('dragend', updateTrikeRoute);
+      }
+      state.map.setView(latlng, 15);
+      updateTrikeRoute();
+      searchEnd.blur();
+    });
+  });
+
+  searchEnd.addEventListener('focus', () => {
+    createAutocompleteDropdown(searchEnd, (place) => {
+      const latlng = L.latLng(place.lat, place.lng);
+      if (state.trike.endMarker) {
+        state.trike.endMarker.setLatLng(latlng);
+      } else {
+        state.trike.endMarker = L.marker(latlng, {
+          draggable: true,
+          icon: createMarkerIcon('B', '#ef4444')
+        }).addTo(state.map);
+        state.trike.endMarker.on('dragend', updateTrikeRoute);
+      }
+      state.map.setView(latlng, 15);
+      updateTrikeRoute();
+      searchEnd.blur();
+    });
+  });
+
   searchEnd.addEventListener('keypress', async (e) => {
     if (e.key !== 'Enter') return;
     const query = e.target.value.trim();
     if (!query) return;
-
+    removeAutocomplete(searchEnd);
     const latlng = await geocode(query);
     if (latlng) {
       if (state.trike.endMarker) {
@@ -725,6 +1209,8 @@ function init() {
   initEventListeners();
   initPanelDrag();
   initMatrixTabs();
+  initComplaintModal();
+  initAdminPanel();
   
   const darkMode = localStorage.getItem('darkMode');
   if (darkMode === 'enabled') {
