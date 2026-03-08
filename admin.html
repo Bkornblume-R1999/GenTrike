@@ -1,1 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Geo GenSan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg: #f5f7fa;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --success: #10b981;
+      --text: #111827;
+      --muted: #6b7280;
+      --font: 'DM Sans', -apple-system, sans-serif;
+      --mono: 'Space Mono', monospace;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+      color: white;
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(37,99,235,0.3);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .topbar-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.18);
+      border: none;
+      color: white;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .topbar-back:hover { background: rgba(255,255,255,0.28); }
+
+    .topbar-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+
+    .topbar-badge {
+      background: rgba(255,255,255,0.2);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-value.danger { color: var(--danger); }
+    .stat-value.success { color: var(--success); }
+
+    /* ── TABLE CARD ── */
+    .table-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .table-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .filter-select {
+      padding: 6px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 13px;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-select:focus { border-color: var(--primary); }
+
+    .btn-danger {
+      padding: 8px 16px;
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-danger:hover { background: #fca5a5; }
+
+    .btn-refresh {
+      padding: 8px 14px;
+      background: #eff6ff;
+      color: var(--primary);
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-refresh:hover { background: #dbeafe; }
+
+    /* ── TABLE ── */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: #f9fafb;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 11px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 13px 16px;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 14px;
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #f9fafb; }
+
+    .col-num { font-family: var(--mono); font-size: 12px; color: var(--muted); width: 40px; }
+    .col-plate { font-family: var(--mono); font-weight: 700; font-size: 13px; white-space: nowrap; }
+    .col-date { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .col-desc { max-width: 280px; word-break: break-word; font-size: 13px; color: #374151; line-height: 1.5; }
+
+    .type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .type-badge.overcharging    { background: #fff7ed; color: #c2410c; }
+    .type-badge.reckless        { background: #fef2f2; color: #b91c1c; }
+    .type-badge.refusal         { background: #f5f3ff; color: #7c3aed; }
+    .type-badge.verbal          { background: #fff1f2; color: #be123c; }
+    .type-badge.unsafe          { background: #fefce8; color: #a16207; }
+    .type-badge.other           { background: #f0fdf4; color: #15803d; }
+    .type-badge.default         { background: #f1f5f9; color: #475569; }
+
+    .empty-state {
+      text-align: center;
+      padding: 56px 24px;
+      color: var(--muted);
+    }
+
+    .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-state p { font-size: 15px; }
+
+    /* ── LOADING ── */
+    .loading-state {
+      text-align: center;
+      padding: 48px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .spinner-sm {
+      width: 24px;
+      height: 24px;
+      border: 3px solid #e5e7eb;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1f2937;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 99px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* ── CONFIRM DIALOG ── */
+    .confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 9000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .confirm-overlay.show { display: flex; }
+
+    .confirm-box {
+      background: white;
+      border-radius: 16px;
+      padding: 28px 24px;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .confirm-icon { font-size: 36px; margin-bottom: 12px; }
+    .confirm-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .confirm-desc { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+    .confirm-btns { display: flex; gap: 10px; }
+    .confirm-cancel { flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; background: white; color: var(--text); }
+    .confirm-cancel:hover { background: var(--bg); }
+    .confirm-ok { flex: 1; padding: 10px; border: none; border-radius: 10px; font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; background: var(--danger); color: white; }
+    .confirm-ok:hover { background: #dc2626; }
+
+    @media (max-width: 600px) {
+      .container { padding: 16px 14px 48px; }
+      .topbar { padding: 0 14px; }
+      .topbar-title { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <a href="index.html" class="topbar-back">← Back</a>
+      <span class="topbar-title">🛡️ Admin Panel</span>
+    </div>
+    <span class="topbar-badge">REPORTS</span>
+  </div>
+
+  <div class="container">
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Reports</div>
+        <div class="stat-value" id="stat-total">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Capacity</div>
+        <div class="stat-value" id="stat-capacity">100</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Most Reported</div>
+        <div class="stat-value" id="stat-top" style="font-size:14px; padding-top:8px;">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Last Report</div>
+        <div class="stat-value" id="stat-last" style="font-size:13px; padding-top:8px;">—</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="table-toolbar-left">
+          <span class="toolbar-title">Tricycle Reports</span>
+          <select class="filter-select" id="filter-type">
+            <option value="">All Types</option>
+            <option value="Overcharging">Overcharging</option>
+            <option value="Reckless Driving">Reckless Driving</option>
+            <option value="Refusal of Service">Refusal of Service</option>
+            <option value="Verbal Abuse">Verbal Abuse</option>
+            <option value="Unsafe Vehicle">Unsafe Vehicle</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-refresh" id="refresh-btn">↻ Refresh</button>
+          <button class="btn-danger" id="clear-all-btn">🗑️ Clear All</button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-num">#</th>
+              <th>Plate No.</th>
+              <th>Date &amp; Time</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody id="reports-tbody">
+            <tr>
+              <td colspan="5">
+                <div class="loading-state">
+                  <div class="spinner-sm"></div>
+                  Loading reports...
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Confirm dialog -->
+  <div class="confirm-overlay" id="confirm-overlay">
+    <div class="confirm-box">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-title">Clear All Reports?</div>
+      <div class="confirm-desc">This will permanently delete all tricycle reports. This action cannot be undone.</div>
+      <div class="confirm-btns">
+        <button class="confirm-cancel" id="confirm-cancel">Cancel</button>
+        <button class="confirm-ok" id="confirm-ok">Yes, Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── STORAGE KEY (shared with app.js) ──────────────────────────────────────
+    const REPORTS_KEY = 'geoGensan_reports';
+    const MAX_REPORTS = 100;
+
+    function getReports() {
+      try { return JSON.parse(localStorage.getItem(REPORTS_KEY) || '[]'); }
+      catch { return []; }
+    }
+
+    function saveReports(reports) {
+      localStorage.setItem(REPORTS_KEY, JSON.stringify(reports));
+    }
+
+    // ── TYPE BADGE ────────────────────────────────────────────────────────────
+    const TYPE_CLASSES = {
+      'Overcharging':       'overcharging',
+      'Reckless Driving':   'reckless',
+      'Refusal of Service': 'refusal',
+      'Verbal Abuse':       'verbal',
+      'Unsafe Vehicle':     'unsafe',
+      'Other':              'other',
+    };
+
+    const TYPE_ICONS = {
+      'Overcharging':       '💸',
+      'Reckless Driving':   '🚗',
+      'Refusal of Service': '🚫',
+      'Verbal Abuse':       '🗣️',
+      'Unsafe Vehicle':     '⚠️',
+      'Other':              '📋',
+    };
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── RENDER ────────────────────────────────────────────────────────────────
+    function renderTable(filterType = '') {
+      const tbody = document.getElementById('reports-tbody');
+      const statTotal = document.getElementById('stat-total');
+      const statTop = document.getElementById('stat-top');
+      const statLast = document.getElementById('stat-last');
+
+      let reports = getReports();
+      statTotal.textContent = reports.length;
+
+      // Top type
+      if (reports.length > 0) {
+        const counts = {};
+        reports.forEach(r => { counts[r.type] = (counts[r.type] || 0) + 1; });
+        const topType = Object.entries(counts).sort((a,b) => b[1]-a[1])[0];
+        statTop.textContent = topType ? topType[0] : '—';
+        statLast.textContent = reports[0] ? reports[0].date.split(',')[0] : '—';
+      } else {
+        statTop.textContent = '—';
+        statLast.textContent = '—';
+      }
+
+      // Apply filter
+      if (filterType) reports = reports.filter(r => r.type === filterType);
+
+      if (reports.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5">
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p>${filterType ? 'No reports of this type.' : 'No reports yet.'}</p>
+          </div>
+        </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = reports.map((r, i) => {
+        const cls = TYPE_CLASSES[r.type] || 'default';
+        const icon = TYPE_ICONS[r.type] || '📋';
+        return `<tr>
+          <td class="col-num">${i + 1}</td>
+          <td class="col-plate">${escapeHtml(r.plate)}</td>
+          <td class="col-date">${escapeHtml(r.date)}</td>
+          <td><span class="type-badge ${cls}">${icon} ${escapeHtml(r.type)}</span></td>
+          <td class="col-desc">${escapeHtml(r.description)}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ── TOAST ─────────────────────────────────────────────────────────────────
+    function showToast(msg, duration = 2500) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    // ── EVENTS ────────────────────────────────────────────────────────────────
+    document.getElementById('filter-type').addEventListener('change', e => {
+      renderTable(e.target.value);
+    });
+
+    document.getElementById('refresh-btn').addEventListener('click', () => {
+      renderTable(document.getElementById('filter-type').value);
+      showToast('↻ Refreshed');
+    });
+
+    // Confirm dialog
+    const confirmOverlay = document.getElementById('confirm-overlay');
+    document.getElementById('clear-all-btn').addEventListener('click', () => {
+      confirmOverlay.classList.add('show');
+    });
+    document.getElementById('confirm-cancel').addEventListener('click', () => {
+      confirmOverlay.classList.remove('show');
+    });
+    document.getElementById('confirm-ok').addEventListener('click', () => {
+      saveReports([]);
+      renderTable();
+      confirmOverlay.classList.remove('show');
+      showToast('🗑️ All reports cleared');
+    });
+
+    // ── INIT ──────────────────────────────────────────────────────────────────
+    renderTable();
+  </script>
+</body>
+</html>
