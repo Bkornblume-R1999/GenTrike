@@ -433,18 +433,19 @@ function saveReports(reports) {
   localStorage.setItem(REPORTS_KEY, JSON.stringify(reports));
 }
 
-function addReport(plate, type, description) {
+function addReport(plate, type, description, imageData = null) {
   let reports = getReports();
   const newReport = {
     id: Date.now(),
     plate: plate.toUpperCase(),
     date: new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' }),
     type,
-    description
+    description,
+    plateImage: imageData || null
   };
   reports.unshift(newReport);
   if (reports.length > MAX_REPORTS) {
-    reports = reports.slice(0, MAX_REPORTS); // Remove oldest (end of array since newest at front)
+    reports = reports.slice(0, MAX_REPORTS);
   }
   saveReports(reports);
 }
@@ -470,6 +471,7 @@ function formatCooldown(ms) {
 }
 
 let cooldownInterval = null;
+let pendingImageData = null; // holds base64 of selected image
 
 function initComplaintModal() {
   const openBtn = document.getElementById('open-complaint');
@@ -478,6 +480,72 @@ function initComplaintModal() {
   const submitBtn = document.getElementById('submit-complaint');
   const descTextarea = document.getElementById('complaint-desc');
   const descCount = document.getElementById('desc-count');
+
+  // Image drop zone elements
+  const dropZone = document.getElementById('image-drop-zone');
+  const fileInput = document.getElementById('complaint-image-input');
+  const dropIdle = document.getElementById('drop-zone-idle');
+  const dropPreview = document.getElementById('drop-zone-preview');
+  const imgPreview = document.getElementById('complaint-img-preview');
+  const removeBtn = document.getElementById('drop-remove-img');
+
+  function resetImageState() {
+    pendingImageData = null;
+    dropIdle.style.display = 'flex';
+    dropPreview.style.display = 'none';
+    imgPreview.src = '';
+    if (fileInput) fileInput.value = '';
+  }
+
+  function handleImageFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      showToast('❌ Please select a valid image file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('❌ Image must be under 5MB');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      pendingImageData = e.target.result;
+      imgPreview.src = pendingImageData;
+      dropIdle.style.display = 'none';
+      dropPreview.style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Click on drop zone → open file picker
+  if (dropZone) {
+    dropIdle.addEventListener('click', () => fileInput && fileInput.click());
+    fileInput && fileInput.addEventListener('change', (e) => {
+      if (e.target.files[0]) handleImageFile(e.target.files[0]);
+    });
+  }
+
+  // Remove image
+  if (removeBtn) {
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      resetImageState();
+    });
+  }
+
+  // Drag & drop
+  if (dropZone) {
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) handleImageFile(file);
+    });
+  }
 
   openBtn.addEventListener('click', () => {
     modal.style.display = 'flex';
@@ -505,12 +573,12 @@ function initComplaintModal() {
     const type = document.getElementById('complaint-type').value;
     const desc = document.getElementById('complaint-desc').value.trim();
 
-    if (!plate) { showToast('❌ Please enter a plate number'); return; }
+    if (!plate && !pendingImageData) { showToast('❌ Enter a plate number or attach a photo'); return; }
     if (!type) { showToast('❌ Please select a report type'); return; }
     if (!desc) { showToast('❌ Please enter a description'); return; }
     if (!canSubmitReport()) { showToast('⏳ Please wait before submitting again'); return; }
 
-    addReport(plate, type, desc);
+    addReport(plate, type, desc, pendingImageData);
     localStorage.setItem(LAST_REPORT_KEY, Date.now().toString());
 
     // Reset form
@@ -518,6 +586,7 @@ function initComplaintModal() {
     document.getElementById('complaint-type').value = '';
     document.getElementById('complaint-desc').value = '';
     descCount.textContent = '0';
+    resetImageState();
 
     modal.style.display = 'none';
     showToast('✅ Report submitted successfully!', 3000);
@@ -559,37 +628,9 @@ function updateCooldownUI() {
 }
 
 // ─── ADMIN PANEL ───────────────────────────────────────────────────────────────
-const ADMIN_PASSWORD = '00000000';
-
+// Admin panel is now a standalone page (admin.html) with its own login gate.
 function initAdminPanel() {
-  const toggle = document.getElementById('admin-access-toggle');
-  const body = document.getElementById('admin-access-body');
-  const chevron = document.getElementById('admin-chevron');
-  const loginBtn = document.getElementById('admin-login-btn');
-  const passwordInput = document.getElementById('admin-password');
-
-  if (!toggle) return;
-
-  toggle.addEventListener('click', () => {
-    const isOpen = body.style.display !== 'none';
-    body.style.display = isOpen ? 'none' : 'block';
-    chevron.style.transform = isOpen ? '' : 'rotate(90deg)';
-  });
-
-  passwordInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') loginBtn.click();
-  });
-
-  loginBtn.addEventListener('click', () => {
-    const pwd = passwordInput.value;
-    if (pwd === ADMIN_PASSWORD) {
-      window.location.href = 'admin.html';
-    } else {
-      document.getElementById('admin-error').style.display = 'block';
-      passwordInput.value = '';
-      passwordInput.focus();
-    }
-  });
+  // No-op: admin login is handled entirely in admin.html
 }
 
 function escapeHtml(str) {
