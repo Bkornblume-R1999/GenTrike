@@ -1910,3 +1910,112 @@ body.dark-mode .admin-table th { background: var(--gray-700); color: var(--gray-
 body.dark-mode .admin-table td { border-color: var(--gray-700); color: var(--gray-300); }
 body.dark-mode .admin-table-wrapper { border-color: var(--gray-600); }
 body.dark-mode .admin-table tr:hover td { background: var(--gray-700); }
+
+/* ─── REPORT TRIKE BUTTON (Trike section) ────────────────────────────────────── */
+.report-trike-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(239,68,68,0.06) 0%, rgba(239,68,68,0.12) 100%);
+  border: 1.5px solid rgba(239,68,68,0.2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition);
+  margin-bottom: 12px;
+  font-family: var(--font-base);
+}
+
+.report-trike-btn:hover {
+  background: linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(239,68,68,0.2) 100%);
+  border-color: rgba(239,68,68,0.4);
+  transform: translateY(-1px);
+}
+
+.report-trike-icon { font-size: 22px; flex-shrink: 0; }
+
+.report-trike-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.report-trike-text strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.report-trike-text span {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 400;
+}
+
+.report-trike-arrow {
+  font-size: 20px;
+  color: #dc2626;
+  opacity: 0.5;
+  font-weight: 700;
+}
+
+/* ─── ADMIN ACCESS SECTION (Info panel bottom) ───────────────────────────────── */
+.admin-access-section {
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.admin-access-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  cursor: pointer;
+  background: var(--gray-50);
+  transition: background var(--transition);
+  user-select: none;
+}
+
+.admin-access-header:hover { background: var(--gray-100); }
+
+.admin-access-icon { font-size: 16px; }
+
+.admin-access-label {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+
+.admin-access-chevron {
+  font-size: 18px;
+  color: var(--gray-400);
+  font-weight: 700;
+  transition: transform var(--transition);
+}
+
+.admin-access-body {
+  padding: 4px 16px 16px;
+  border-top: 1px solid var(--gray-200);
+  background: var(--white);
+}
+
+/* Dark mode for new elements */
+body.dark-mode .report-trike-btn {
+  background: rgba(239,68,68,0.08);
+  border-color: rgba(239,68,68,0.25);
+}
+body.dark-mode .report-trike-btn:hover {
+  background: rgba(239,68,68,0.15);
+}
+body.dark-mode .report-trike-text span { color: var(--gray-400); }
+body.dark-mode .admin-access-section { border-color: var(--gray-700); }
+body.dark-mode .admin-access-header { background: var(--gray-800); }
+body.dark-mode .admin-access-header:hover { background: var(--gray-700); }
+body.dark-mode .admin-access-label { color: var(--gray-400); }
+body.dark-mode .admin-access-body { background: var(--gray-900); border-color: var(--gray-700); }
