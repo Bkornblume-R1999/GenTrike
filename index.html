@@ -24,16 +24,6 @@
         <p>Don't get lost</p>
       </div>
     </div>
-    <div class="header-actions">
-      <button class="header-btn complaint-btn" id="open-complaint" title="Report a Tricycle">
-        <span>🚨</span>
-        <span class="header-btn-label">Report</span>
-      </button>
-      <button class="header-btn admin-btn" id="open-admin" title="Admin Panel">
-        <span>🔐</span>
-        <span class="header-btn-label">Admin</span>
-      </button>
-    </div>
   </header>
 
   <!-- COMPLAINT MODAL -->
@@ -71,56 +61,6 @@
             <span class="char-count"><span id="desc-count">0</span>/500</span>
           </div>
           <button class="btn-primary" id="submit-complaint">Submit Report</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADMIN LOGIN MODAL -->
-  <div id="admin-login-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-box modal-sm">
-      <div class="modal-header">
-        <h2>🔐 Admin Access</h2>
-        <button class="modal-close" id="close-admin-login">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="admin-password" placeholder="Enter 8-digit password" maxlength="8" autocomplete="off">
-          <p id="admin-error" class="error-text" style="display:none;">❌ Incorrect password</p>
-        </div>
-        <button class="btn-primary" id="admin-login-btn">Login</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADMIN PANEL MODAL -->
-  <div id="admin-panel-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-box modal-lg">
-      <div class="modal-header">
-        <h2>🛡️ Admin Panel — Reports</h2>
-        <button class="modal-close" id="close-admin-panel">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="admin-toolbar">
-          <span id="report-count-label" class="report-count-label">Loading...</span>
-          <button class="btn-danger-sm" id="clear-all-reports">🗑️ Clear All</button>
-        </div>
-        <div class="admin-table-wrapper">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Plate No.</th>
-                <th>Date &amp; Time</th>
-                <th>Type</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody id="reports-tbody">
-              <tr><td colspan="5" class="empty-row">No reports found.</td></tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </div>
@@ -248,6 +188,16 @@
         <div class="instruction-card">
           <p>💡 Tap any two points on the map to calculate fare</p>
         </div>
+
+        <!-- Report a Tricycle -->
+        <button class="report-trike-btn" id="open-complaint">
+          <span class="report-trike-icon">🚨</span>
+          <div class="report-trike-text">
+            <strong>Report a Tricycle</strong>
+            <span>Overcharging, reckless driving, etc.</span>
+          </div>
+          <span class="report-trike-arrow">›</span>
+        </button>
 
         <div class="warning-box">
           <p><strong>⚠️ Route Advisory:</strong> Actual routes may differ due to traffic or driver preference. This may affect the final fare. Always confirm with your driver before paying.</p>
@@ -670,6 +620,22 @@
 
         <div class="disclaimer">
           <strong>Disclaimer:</strong> Fares are based on GenSan City Ordinance No. 08, Series of 2023. The driver may take different routes which may affect the final fare, so always confirm with your driver. This calculator provides estimates only.
+        </div>
+
+        <!-- Admin Access -->
+        <div class="admin-access-section" id="admin-access-section">
+          <div class="admin-access-header" id="admin-access-toggle">
+            <span class="admin-access-icon">🔐</span>
+            <span class="admin-access-label">Admin Access</span>
+            <span class="admin-access-chevron" id="admin-chevron">›</span>
+          </div>
+          <div class="admin-access-body" id="admin-access-body" style="display:none;">
+            <div class="form-group" style="margin-bottom:12px;">
+              <input type="password" id="admin-password" placeholder="Enter password" maxlength="8" autocomplete="off" style="margin-top:10px;">
+              <p id="admin-error" class="error-text" style="display:none; margin-top:6px;">❌ Incorrect password</p>
+            </div>
+            <button class="btn-primary" id="admin-login-btn" style="margin-top:0;">Go to Admin Panel</button>
+          </div>
         </div>
 
         <div class="branding">
