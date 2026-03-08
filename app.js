@@ -247,7 +247,7 @@ const GENSAN_PLACES = [
 ];
 
 // ─── SEARCH HISTORY ────────────────────────────────────────────────────────────
-const MAX_HISTORY = 8;
+const MAX_HISTORY = 4;
 
 function getSearchHistory() {
   try {
@@ -562,27 +562,19 @@ function updateCooldownUI() {
 const ADMIN_PASSWORD = '00000000';
 
 function initAdminPanel() {
-  const openBtn = document.getElementById('open-admin');
-  const loginModal = document.getElementById('admin-login-modal');
-  const panelModal = document.getElementById('admin-panel-modal');
-  const closeLoginBtn = document.getElementById('close-admin-login');
-  const closePanelBtn = document.getElementById('close-admin-panel');
+  const toggle = document.getElementById('admin-access-toggle');
+  const body = document.getElementById('admin-access-body');
+  const chevron = document.getElementById('admin-chevron');
   const loginBtn = document.getElementById('admin-login-btn');
   const passwordInput = document.getElementById('admin-password');
-  const clearBtn = document.getElementById('clear-all-reports');
 
-  openBtn.addEventListener('click', () => {
-    passwordInput.value = '';
-    document.getElementById('admin-error').style.display = 'none';
-    loginModal.style.display = 'flex';
-    setTimeout(() => passwordInput.focus(), 100);
+  if (!toggle) return;
+
+  toggle.addEventListener('click', () => {
+    const isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? '' : 'rotate(90deg)';
   });
-
-  closeLoginBtn.addEventListener('click', () => { loginModal.style.display = 'none'; });
-  loginModal.addEventListener('click', (e) => { if (e.target === loginModal) loginModal.style.display = 'none'; });
-
-  closePanelBtn.addEventListener('click', () => { panelModal.style.display = 'none'; });
-  panelModal.addEventListener('click', (e) => { if (e.target === panelModal) panelModal.style.display = 'none'; });
 
   passwordInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') loginBtn.click();
@@ -591,45 +583,13 @@ function initAdminPanel() {
   loginBtn.addEventListener('click', () => {
     const pwd = passwordInput.value;
     if (pwd === ADMIN_PASSWORD) {
-      loginModal.style.display = 'none';
-      renderAdminTable();
-      panelModal.style.display = 'flex';
+      window.location.href = 'admin.html';
     } else {
       document.getElementById('admin-error').style.display = 'block';
       passwordInput.value = '';
+      passwordInput.focus();
     }
   });
-
-  clearBtn.addEventListener('click', () => {
-    if (confirm('Clear ALL reports? This cannot be undone.')) {
-      saveReports([]);
-      renderAdminTable();
-      showToast('🗑️ All reports cleared');
-    }
-  });
-}
-
-function renderAdminTable() {
-  const tbody = document.getElementById('reports-tbody');
-  const countLabel = document.getElementById('report-count-label');
-  const reports = getReports();
-
-  countLabel.textContent = `${reports.length} / ${MAX_REPORTS} reports`;
-
-  if (reports.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No reports found.</td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = reports.map((r, i) => `
-    <tr>
-      <td class="report-num">${i + 1}</td>
-      <td class="report-plate">${escapeHtml(r.plate)}</td>
-      <td class="report-date">${escapeHtml(r.date)}</td>
-      <td><span class="report-type-badge">${escapeHtml(r.type)}</span></td>
-      <td class="report-desc">${escapeHtml(r.description)}</td>
-    </tr>
-  `).join('');
 }
 
 function escapeHtml(str) {
