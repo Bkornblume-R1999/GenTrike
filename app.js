@@ -500,39 +500,80 @@ async function geocode(query) {
   return null;
 }
 
-// ─── COMPLAINT SYSTEM ──────────────────────────────────────────────────────────
-const REPORTS_KEY = 'geoGensan_reports';
+// ─── FIREBASE + IMGBB CONFIG ───────────────────────────────────────────────────
+const FIREBASE_DB_URL = 'https://gentrike-75c7c-default-rtdb.asia-southeast1.firebasedatabase.app';
+const IMGBB_API_KEY   = '7416acef89ebb625100b3bf7a580770a';
 const LAST_REPORT_KEY = 'geoGensan_lastReportTime';
-const MAX_REPORTS = 100;
-const COOLDOWN_MS = 2 * 60 * 60 * 1000; // 2 hours
+const MAX_REPORTS     = 100;
+const COOLDOWN_MS     = 2 * 60 * 60 * 1000; // 2 hours
 
-function getReports() {
-  try {
-    return JSON.parse(localStorage.getItem(REPORTS_KEY) || '[]');
-  } catch { return []; }
+// ── ImgBB upload ──────────────────────────────────────────────────────────────
+async function uploadToImgBB(base64DataUrl) {
+  // Strip the "data:image/...;base64," prefix
+  const base64 = base64DataUrl.split(',')[1];
+  const formData = new FormData();
+  formData.append('image', base64);
+  formData.append('key', IMGBB_API_KEY);
+
+  const res = await fetch('https://api.imgbb.com/1/upload', {
+    method: 'POST',
+    body: formData
+  });
+  const data = await res.json();
+  if (data.success) return data.data.url;
+  throw new Error('ImgBB upload failed: ' + (data.error?.message || 'unknown'));
 }
 
-function saveReports(reports) {
-  localStorage.setItem(REPORTS_KEY, JSON.stringify(reports));
+// ── Firebase Realtime Database helpers ───────────────────────────────────────
+async function fbPush(path, value) {
+  const res = await fetch(`${FIREBASE_DB_URL}/${path}.json`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(value)
+  });
+  if (!res.ok) throw new Error('Firebase write failed: ' + res.status);
+  return res.json(); // returns { name: "-generatedKey" }
 }
 
-function addReport(plate, type, description, imageData = null) {
-  let reports = getReports();
-  const newReport = {
-    id: Date.now(),
-    plate: plate.toUpperCase(),
-    date: new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' }),
-    type,
-    description,
-    plateImage: imageData || null
-  };
-  reports.unshift(newReport);
-  if (reports.length > MAX_REPORTS) {
-    reports = reports.slice(0, MAX_REPORTS);
+async function fbGetAll(path) {
+  const res = await fetch(`${FIREBASE_DB_URL}/${path}.json`);
+  if (!res.ok) throw new Error('Firebase read failed: ' + res.status);
+  const data = await res.json();
+  if (!data) return [];
+  // Convert object of objects → sorted array (newest first by timestamp)
+  return Object.entries(data)
+    .map(([key, val]) => ({ _key: key, ...val }))
+    .sort((a, b) => b.timestamp - a.timestamp);
+}
+
+async function fbDelete(path) {
+  const res = await fetch(`${FIREBASE_DB_URL}/${path}.json`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Firebase delete failed: ' + res.status);
+}
+
+async function fbCount(path) {
+  // Use shallow=true to just get keys without full data (faster)
+  const res = await fetch(`${FIREBASE_DB_URL}/${path}.json?shallow=true`);
+  if (!res.ok) return 0;
+  const data = await res.json();
+  return data ? Object.keys(data).length : 0;
+}
+
+// ── Enforce 100-report cap (delete oldest if over limit) ─────────────────────
+async function enforceReportCap() {
+  const res = await fetch(`${FIREBASE_DB_URL}/reports.json`);
+  if (!res.ok) return;
+  const data = await res.json();
+  if (!data) return;
+
+  const entries = Object.entries(data).sort((a, b) => a[1].timestamp - b[1].timestamp);
+  if (entries.length > MAX_REPORTS) {
+    const toDelete = entries.slice(0, entries.length - MAX_REPORTS);
+    await Promise.all(toDelete.map(([key]) => fbDelete(`reports/${key}`)));
   }
-  saveReports(reports);
 }
 
+// ─── COMPLAINT SYSTEM ─────────────────────────────────────────────────────────
 function canSubmitReport() {
   const last = parseInt(localStorage.getItem(LAST_REPORT_KEY) || '0');
   return Date.now() - last >= COOLDOWN_MS;
@@ -554,41 +595,42 @@ function formatCooldown(ms) {
 }
 
 let cooldownInterval = null;
-let pendingImageData = null; // holds base64 of selected image
+let pendingImageData = null; // holds base64 data URL of selected image
+let pendingImageFile = null; // holds the original File object
 
 function initComplaintModal() {
-  const openBtn = document.getElementById('open-complaint');
-  const modal = document.getElementById('complaint-modal');
-  const closeBtn = document.getElementById('close-complaint');
-  const submitBtn = document.getElementById('submit-complaint');
+  const openBtn      = document.getElementById('open-complaint');
+  const modal        = document.getElementById('complaint-modal');
+  const closeBtn     = document.getElementById('close-complaint');
+  const submitBtn    = document.getElementById('submit-complaint');
   const descTextarea = document.getElementById('complaint-desc');
-  const descCount = document.getElementById('desc-count');
+  const descCount    = document.getElementById('desc-count');
 
   // Image drop zone elements
-  const dropZone = document.getElementById('image-drop-zone');
-  const fileInput = document.getElementById('complaint-image-input');
-  const dropIdle = document.getElementById('drop-zone-idle');
+  const dropZone   = document.getElementById('image-drop-zone');
+  const fileInput  = document.getElementById('complaint-image-input');
+  const dropIdle   = document.getElementById('drop-zone-idle');
   const dropPreview = document.getElementById('drop-zone-preview');
   const imgPreview = document.getElementById('complaint-img-preview');
-  const removeBtn = document.getElementById('drop-remove-img');
+  const removeBtn  = document.getElementById('drop-remove-img');
 
   function resetImageState() {
     pendingImageData = null;
-    dropIdle.style.display = 'flex';
-    dropPreview.style.display = 'none';
-    imgPreview.src = '';
-    if (fileInput) fileInput.value = '';
+    pendingImageFile = null;
+    if (dropIdle)    dropIdle.style.display = 'flex';
+    if (dropPreview) dropPreview.style.display = 'none';
+    if (imgPreview)  imgPreview.src = '';
+    if (fileInput)   fileInput.value = '';
   }
 
   function handleImageFile(file) {
     if (!file || !file.type.startsWith('image/')) {
-      showToast('❌ Please select a valid image file');
-      return;
+      showToast('❌ Please select a valid image file'); return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      showToast('❌ Image must be under 5MB');
-      return;
+      showToast('❌ Image must be under 5MB'); return;
     }
+    pendingImageFile = file;
     const reader = new FileReader();
     reader.onload = (e) => {
       pendingImageData = e.target.result;
@@ -599,35 +641,23 @@ function initComplaintModal() {
     reader.readAsDataURL(file);
   }
 
-  // Click on drop zone → open file picker
   if (dropZone) {
     dropIdle.addEventListener('click', () => fileInput && fileInput.click());
     fileInput && fileInput.addEventListener('change', (e) => {
       if (e.target.files[0]) handleImageFile(e.target.files[0]);
     });
-  }
-
-  // Remove image
-  if (removeBtn) {
-    removeBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      resetImageState();
-    });
-  }
-
-  // Drag & drop
-  if (dropZone) {
     dropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropZone.classList.add('drag-over');
+      e.preventDefault(); dropZone.classList.add('drag-over');
     });
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
     dropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropZone.classList.remove('drag-over');
-      const file = e.dataTransfer.files[0];
-      if (file) handleImageFile(file);
+      e.preventDefault(); dropZone.classList.remove('drag-over');
+      if (e.dataTransfer.files[0]) handleImageFile(e.dataTransfer.files[0]);
     });
+  }
+
+  if (removeBtn) {
+    removeBtn.addEventListener('click', (e) => { e.stopPropagation(); resetImageState(); });
   }
 
   openBtn.addEventListener('click', () => {
@@ -641,46 +671,76 @@ function initComplaintModal() {
   });
 
   modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.style.display = 'none';
-      clearInterval(cooldownInterval);
-    }
+    if (e.target === modal) { modal.style.display = 'none'; clearInterval(cooldownInterval); }
   });
 
   descTextarea.addEventListener('input', () => {
     descCount.textContent = descTextarea.value.length;
   });
 
-  submitBtn.addEventListener('click', () => {
+  submitBtn.addEventListener('click', async () => {
     const plate = document.getElementById('complaint-plate').value.trim();
-    const type = document.getElementById('complaint-type').value;
-    const desc = document.getElementById('complaint-desc').value.trim();
+    const type  = document.getElementById('complaint-type').value;
+    const desc  = document.getElementById('complaint-desc').value.trim();
 
     if (!plate && !pendingImageData) { showToast('❌ Enter a plate number or attach a photo'); return; }
-    if (!type) { showToast('❌ Please select a report type'); return; }
-    if (!desc) { showToast('❌ Please enter a description'); return; }
+    if (!type)  { showToast('❌ Please select a report type'); return; }
+    if (!desc)  { showToast('❌ Please enter a description'); return; }
     if (!canSubmitReport()) { showToast('⏳ Please wait before submitting again'); return; }
 
-    addReport(plate, type, desc, pendingImageData);
-    localStorage.setItem(LAST_REPORT_KEY, Date.now().toString());
+    // Disable button and show uploading state
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Submitting...';
 
-    // Reset form
-    document.getElementById('complaint-plate').value = '';
-    document.getElementById('complaint-type').value = '';
-    document.getElementById('complaint-desc').value = '';
-    descCount.textContent = '0';
-    resetImageState();
+    try {
+      // 1. Upload image to ImgBB if one was attached
+      let imageUrl = null;
+      if (pendingImageData) {
+        showToast('📤 Uploading photo...', 10000);
+        imageUrl = await uploadToImgBB(pendingImageData);
+      }
 
-    modal.style.display = 'none';
-    showToast('✅ Report submitted successfully!', 3000);
-    updateCooldownUI();
+      // 2. Push report to Firebase
+      const report = {
+        plate: plate.toUpperCase() || '(photo only)',
+        type,
+        description: desc,
+        imageUrl: imageUrl || null,
+        timestamp: Date.now(),
+        date: new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' })
+      };
+      await fbPush('reports', report);
+
+      // 3. Enforce 100-report cap in background
+      enforceReportCap();
+
+      // 4. Record cooldown locally
+      localStorage.setItem(LAST_REPORT_KEY, Date.now().toString());
+
+      // 5. Reset form
+      document.getElementById('complaint-plate').value = '';
+      document.getElementById('complaint-type').value = '';
+      document.getElementById('complaint-desc').value = '';
+      descCount.textContent = '0';
+      resetImageState();
+
+      modal.style.display = 'none';
+      showToast('✅ Report submitted!', 3000);
+      updateCooldownUI();
+
+    } catch (err) {
+      console.error('Submit error:', err);
+      showToast('❌ Submission failed. Check your connection.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Report';
+    }
   });
 }
 
 function updateCooldownUI() {
-  const notice = document.getElementById('complaint-cooldown-notice');
-  const formBody = document.getElementById('complaint-form-body');
-  const timerEl = document.getElementById('cooldown-timer');
+  const notice   = document.getElementById('complaint-cooldown-notice');
+  const timerEl  = document.getElementById('cooldown-timer');
   const submitBtn = document.getElementById('submit-complaint');
 
   clearInterval(cooldownInterval);
