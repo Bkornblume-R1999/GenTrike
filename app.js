@@ -207,7 +207,6 @@ const GENSAN_PLACES = [
   { name: 'Notre Dame of Dadiangas University', lat: 6.1050, lng: 125.1786, tags: ['nddu', 'university', 'college', 'notre dame'] },
   { name: 'University of Southern Mindanao GenSan', lat: 6.1100, lng: 125.1701, tags: ['usm', 'university', 'college'] },
   { name: 'General Santos City National High School', lat: 6.1040, lng: 125.1762, tags: ['high school', 'nhs'] },
-  { name: 'Notre Dame of Marbel University', lat: 6.1055, lng: 125.1782, tags: ['ndmu', 'marbel', 'university'] },
   { name: 'STI College General Santos', lat: 6.1087, lng: 125.1797, tags: ['sti', 'college'] },
   // Transport / Terminals
   { name: 'General Santos Airport (Francisco Bangoy)', lat: 6.0583, lng: 125.0959, tags: ['airport', 'bangoy', 'flights'] },
@@ -224,10 +223,10 @@ const GENSAN_PLACES = [
   { name: 'Bawing Public Market', lat: 6.0852, lng: 125.1399, tags: ['bawing', 'market'] },
   // Parks & Landmarks
   { name: 'Oval Plaza General Santos', lat: 6.1082, lng: 125.1717, tags: ['oval', 'plaza', 'park', 'landmark'] },
-  { name: 'People\'s Park GenSan', lat: 6.1084, lng: 125.1718, tags: ['park', 'people\'s'] },
+  { name: "People's Park GenSan", lat: 6.1084, lng: 125.1718, tags: ['park', 'people'] },
   { name: 'GenSan Fish Port Complex', lat: 6.0954, lng: 125.1655, tags: ['fish port', 'port', 'fishing'] },
   { name: 'Manny Pacquiao Museum', lat: 6.1078, lng: 125.1720, tags: ['pacquiao', 'museum', 'landmark'] },
-  // Barangays / Districts
+  // Barangays / Districts — GenSan
   { name: 'Barangay Lagao', lat: 6.1276, lng: 125.1963, tags: ['lagao', 'barangay'] },
   { name: 'Barangay Labangal', lat: 6.0987, lng: 125.1593, tags: ['labangal', 'barangay'] },
   { name: 'Barangay Calumpang', lat: 6.1048, lng: 125.1683, tags: ['calumpang', 'barangay'] },
@@ -240,10 +239,52 @@ const GENSAN_PLACES = [
   { name: 'Hotel Heneral Santos', lat: 6.1076, lng: 125.1718, tags: ['hotel', 'heneral'] },
   { name: 'Ceresita Fine Hotel Labangal', lat: 6.0985, lng: 125.1569, tags: ['hotel', 'ceresita', 'labangal'] },
   { name: 'Phela Grande Convention Center', lat: 6.1143, lng: 125.1852, tags: ['hotel', 'phela', 'convention'] },
-  // Fast Food / Landmarks
-  { name: 'Jollibee Pioneer Avenue', lat: 6.1073, lng: 125.1767, tags: ['jollibee', 'pioneer'] },
+  // Roads / Key Junctions
   { name: 'Pioneer Avenue', lat: 6.1073, lng: 125.1757, tags: ['pioneer', 'avenue', 'street'] },
   { name: 'National Highway GenSan', lat: 6.1062, lng: 125.1654, tags: ['national highway', 'highway'] },
+  { name: 'Jollibee Pioneer Avenue', lat: 6.1073, lng: 125.1767, tags: ['jollibee', 'pioneer'] },
+
+  // ── SOUTH COTABATO MUNICIPALITIES ─────────────────────────────────────────
+  // Koronadal City (provincial capital)
+  { name: 'Koronadal City', lat: 6.5028, lng: 124.8469, tags: ['koronadal', 'marbel', 'capital', 'south cotabato'] },
+  { name: 'Koronadal City Hall', lat: 6.5021, lng: 124.8461, tags: ['koronadal', 'city hall', 'government', 'marbel'] },
+  { name: 'South Cotabato Capitol', lat: 6.5035, lng: 124.8477, tags: ['capitol', 'provincial', 'south cotabato', 'koronadal'] },
+  { name: 'Notre Dame of Marbel University', lat: 6.4980, lng: 124.8443, tags: ['ndmu', 'marbel', 'university', 'koronadal'] },
+  { name: 'Koronadal Public Market', lat: 6.5019, lng: 124.8450, tags: ['koronadal', 'market', 'palengke', 'marbel'] },
+  { name: 'South Cotabato Provincial Hospital', lat: 6.5030, lng: 124.8500, tags: ['hospital', 'south cotabato', 'koronadal'] },
+  // Tupi
+  { name: 'Tupi, South Cotabato', lat: 6.3328, lng: 125.0253, tags: ['tupi', 'municipality', 'south cotabato'] },
+  { name: 'Tupi Public Market', lat: 6.3325, lng: 125.0248, tags: ['tupi', 'market', 'palengke'] },
+  { name: 'Tupi Municipal Hall', lat: 6.3330, lng: 125.0255, tags: ['tupi', 'municipal hall', 'government'] },
+  // Polomolok
+  { name: 'Polomolok, South Cotabato', lat: 6.2152, lng: 125.0731, tags: ['polomolok', 'municipality', 'south cotabato'] },
+  { name: 'Polomolok Public Market', lat: 6.2148, lng: 125.0726, tags: ['polomolok', 'market'] },
+  { name: 'Dole Philippines Polomolok', lat: 6.2180, lng: 125.0800, tags: ['dole', 'polomolok', 'pineapple', 'plantation'] },
+  // Surallah
+  { name: 'Surallah, South Cotabato', lat: 6.3642, lng: 124.7397, tags: ['surallah', 'municipality', 'south cotabato'] },
+  { name: 'Surallah Public Market', lat: 6.3639, lng: 124.7393, tags: ['surallah', 'market', 'palengke'] },
+  { name: 'Surallah Municipal Hall', lat: 6.3645, lng: 124.7400, tags: ['surallah', 'municipal hall', 'government'] },
+  // Lake Sebu
+  { name: 'Lake Sebu, South Cotabato', lat: 6.2630, lng: 124.6650, tags: ['lake sebu', 'municipality', 'south cotabato', 'tboli'] },
+  { name: "Lake Sebu (Seloton)", lat: 6.2617, lng: 124.6633, tags: ['lake sebu', 'lake', 'tourism', 'tboli'] },
+  { name: "Seven Falls Lake Sebu", lat: 6.2700, lng: 124.6580, tags: ['seven falls', 'lake sebu', 'falls', 'tourism', 'zipline'] },
+  // T'boli
+  { name: "T'boli, South Cotabato", lat: 6.1202, lng: 124.5818, tags: ['tboli', 'municipality', 'south cotabato'] },
+  // Banga
+  { name: 'Banga, South Cotabato', lat: 6.2997, lng: 124.7822, tags: ['banga', 'municipality', 'south cotabato'] },
+  { name: 'Banga Municipal Hall', lat: 6.2994, lng: 124.7818, tags: ['banga', 'municipal hall', 'government'] },
+  // Santo Niño
+  { name: 'Santo Niño, South Cotabato', lat: 6.4294, lng: 124.8001, tags: ['santo nino', 'municipality', 'south cotabato'] },
+  // Norala
+  { name: 'Norala, South Cotabato', lat: 6.4650, lng: 124.6681, tags: ['norala', 'municipality', 'south cotabato'] },
+  // Tantangan
+  { name: 'Tantangan, South Cotabato', lat: 6.3892, lng: 124.9014, tags: ['tantangan', 'municipality', 'south cotabato'] },
+  // Tampakan
+  { name: 'Tampakan, South Cotabato', lat: 6.4667, lng: 124.9906, tags: ['tampakan', 'municipality', 'south cotabato'] },
+  // Sto. Niño (different from above — Lambayong)
+  { name: 'Lambayong (Moises Padilla), South Cotabato', lat: 6.5522, lng: 124.6506, tags: ['lambayong', 'moises padilla', 'municipality', 'south cotabato'] },
+  // Key regional roads
+  { name: 'Cotabato-General Santos Highway', lat: 6.3500, lng: 124.9500, tags: ['highway', 'national road', 'south cotabato'] },
 ];
 
 // ─── SEARCH HISTORY ────────────────────────────────────────────────────────────
@@ -268,7 +309,7 @@ function addToSearchHistory(place) {
 function searchLocalPlaces(query) {
   const q = query.toLowerCase().trim();
   if (!q) return [];
-  
+
   const scored = GENSAN_PLACES.map(place => {
     const nameLower = place.name.toLowerCase();
     let score = 0;
@@ -278,40 +319,64 @@ function searchLocalPlaces(query) {
     else if (place.tags.some(t => q.includes(t))) score = 30;
     return { ...place, score };
   }).filter(p => p.score > 0).sort((a, b) => b.score - a.score);
-  
+
   return scored.slice(0, 5);
 }
 
+// Track which input currently owns the open dropdown
+let _activeAutocompleteInput = null;
+
+function closeAllAutocompletes() {
+  document.querySelectorAll('.autocomplete-dropdown').forEach(d => d.remove());
+  _activeAutocompleteInput = null;
+}
+
+// One global listener to close dropdowns when clicking outside any search field
+document.addEventListener('click', (e) => {
+  // If the click is inside an autocomplete dropdown or an input-content wrapper, keep it open
+  if (e.target.closest('.autocomplete-dropdown') || e.target.closest('.input-content')) return;
+  closeAllAutocompletes();
+}, true);
+
 function createAutocompleteDropdown(inputEl, onSelect) {
+  // Close any dropdown belonging to the OTHER input first
+  document.querySelectorAll('.autocomplete-dropdown').forEach(d => {
+    // Only remove dropdowns not belonging to this input's wrapper
+    const wrapper = inputEl.closest('.input-content') || inputEl.parentElement;
+    if (!wrapper.contains(d)) d.remove();
+  });
+
   const wrapper = inputEl.closest('.input-content') || inputEl.parentElement;
-  
-  // Remove old dropdown
+
+  // Remove existing dropdown for this field
   const old = wrapper.querySelector('.autocomplete-dropdown');
   if (old) old.remove();
-  
+
+  _activeAutocompleteInput = inputEl;
+
   const query = inputEl.value.trim();
   const history = getSearchHistory();
-  
+
   let results = [];
   if (!query) {
-    // Show recent searches
+    // Show recent searches only (up to MAX_HISTORY)
     results = history.map(h => ({ ...h, isHistory: true }));
   } else {
     results = searchLocalPlaces(query);
   }
-  
+
   if (!results.length) return;
-  
+
   const dropdown = document.createElement('div');
   dropdown.className = 'autocomplete-dropdown';
-  
+
   if (!query && results.length) {
     const header = document.createElement('div');
     header.className = 'autocomplete-header';
     header.textContent = '🕐 Recent Searches';
     dropdown.appendChild(header);
   }
-  
+
   results.forEach(place => {
     const item = document.createElement('div');
     item.className = 'autocomplete-item';
@@ -322,11 +387,17 @@ function createAutocompleteDropdown(inputEl, onSelect) {
     item.addEventListener('mousedown', (e) => {
       e.preventDefault();
       onSelect(place);
-      dropdown.remove();
+      closeAllAutocompletes();
+    });
+    // Touch support
+    item.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      onSelect(place);
+      closeAllAutocompletes();
     });
     dropdown.appendChild(item);
   });
-  
+
   wrapper.style.position = 'relative';
   wrapper.appendChild(dropdown);
 }
@@ -335,6 +406,7 @@ function removeAutocomplete(inputEl) {
   const wrapper = inputEl.closest('.input-content') || inputEl.parentElement;
   const dd = wrapper.querySelector('.autocomplete-dropdown');
   if (dd) dd.remove();
+  if (_activeAutocompleteInput === inputEl) _activeAutocompleteInput = null;
 }
 
 async function reverseGeocode(latlng) {
@@ -371,25 +443,36 @@ async function reverseGeocode(latlng) {
   }
 }
 
-// GenSan center + ~30km radius bounding box
-const GENSAN_VIEWBOX = '124.8,5.85,125.45,6.38';
+// South Cotabato / Region XII bounding box
+// Covers General Santos, Koronadal, Surallah, Tupi, Polomolok, Tampakan, T'boli, Lake Sebu, etc.
+// approx: lon 124.55–125.45, lat 5.85–6.55
+const REGION12_VIEWBOX = '124.55,5.85,125.45,6.55';
+
+// Check if a Nominatim result is within Region XII / South Cotabato area
+function isWithinRegion12(lat, lng) {
+  return lat >= 5.85 && lat <= 6.55 && lng >= 124.55 && lng <= 125.45;
+}
 
 async function geocodeWithNominatim(query) {
-  // First try with GenSan context + expanded viewbox
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', General Santos City, Philippines')}&viewbox=${GENSAN_VIEWBOX}&bounded=0&limit=5&addressdetails=1&namedetails=1`;
   try {
-    const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
-    const data = await res.json();
-    if (data.length > 0) {
-      return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), name: data[0].display_name.split(',')[0] };
+    // Attempt 1: query + South Cotabato context, bounded to region
+    const url1 = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', South Cotabato, Philippines')}&viewbox=${REGION12_VIEWBOX}&bounded=1&limit=5&addressdetails=1&namedetails=1`;
+    const res1 = await fetch(url1, { headers: { 'Accept-Language': 'en' } });
+    const data1 = await res1.json();
+    const valid1 = data1.filter(r => isWithinRegion12(parseFloat(r.lat), parseFloat(r.lon)));
+    if (valid1.length > 0) {
+      return { lat: parseFloat(valid1[0].lat), lng: parseFloat(valid1[0].lon), name: valid1[0].display_name.split(',')[0] };
     }
-    // Try without GenSan context but still biased to the region
-    const url2 = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${GENSAN_VIEWBOX}&bounded=0&limit=5`;
+
+    // Attempt 2: query alone, still bounded to region
+    const url2 = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${REGION12_VIEWBOX}&bounded=1&limit=5&addressdetails=1`;
     const res2 = await fetch(url2, { headers: { 'Accept-Language': 'en' } });
     const data2 = await res2.json();
-    if (data2.length > 0) {
-      return { lat: parseFloat(data2[0].lat), lng: parseFloat(data2[0].lon), name: data2[0].display_name.split(',')[0] };
+    const valid2 = data2.filter(r => isWithinRegion12(parseFloat(r.lat), parseFloat(r.lon)));
+    if (valid2.length > 0) {
+      return { lat: parseFloat(valid2[0].lat), lng: parseFloat(valid2[0].lon), name: valid2[0].display_name.split(',')[0] };
     }
+
     return null;
   } catch (error) {
     console.error('Geocoding error:', error);
@@ -1070,48 +1153,57 @@ function initEventListeners() {
   setupSearchField('search-start', 'start-display');
   setupSearchField('search-end', 'end-display');
 
-  // Autocomplete for start input
-  searchStart.addEventListener('input', () => {
-    createAutocompleteDropdown(searchStart, (place) => {
-      const latlng = L.latLng(place.lat, place.lng);
-      if (state.trike.startMarker) {
-        state.trike.startMarker.setLatLng(latlng);
-      } else {
-        state.trike.startMarker = L.marker(latlng, {
-          draggable: true,
-          icon: createMarkerIcon('A', '#10b981')
-        }).addTo(state.map);
-        state.trike.startMarker.on('dragend', updateTrikeRoute);
-      }
-      state.map.setView(latlng, 15);
-      updateTrikeRoute();
-      searchStart.blur();
-    });
+  // ── Helper: place-selection callbacks ───────────────────────────────────────
+  function selectStartPlace(place) {
+    const latlng = L.latLng(place.lat, place.lng);
+    addToSearchHistory(place);
+    if (state.trike.startMarker) {
+      state.trike.startMarker.setLatLng(latlng);
+    } else {
+      state.trike.startMarker = L.marker(latlng, {
+        draggable: true,
+        icon: createMarkerIcon('A', '#10b981')
+      }).addTo(state.map);
+      state.trike.startMarker.on('dragend', updateTrikeRoute);
+    }
+    state.map.setView(latlng, 15);
+    updateTrikeRoute();
+    searchStart.blur();
+  }
+
+  function selectEndPlace(place) {
+    const latlng = L.latLng(place.lat, place.lng);
+    addToSearchHistory(place);
+    if (state.trike.endMarker) {
+      state.trike.endMarker.setLatLng(latlng);
+    } else {
+      state.trike.endMarker = L.marker(latlng, {
+        draggable: true,
+        icon: createMarkerIcon('B', '#ef4444')
+      }).addTo(state.map);
+      state.trike.endMarker.on('dragend', updateTrikeRoute);
+    }
+    state.map.setView(latlng, 15);
+    updateTrikeRoute();
+    searchEnd.blur();
+  }
+
+  // ── Start field ──────────────────────────────────────────────────────────────
+  searchStart.addEventListener('focus', () => {
+    // Close end-field dropdown before opening start's
+    removeAutocomplete(searchEnd);
+    createAutocompleteDropdown(searchStart, selectStartPlace);
   });
 
-  searchStart.addEventListener('focus', () => {
-    createAutocompleteDropdown(searchStart, (place) => {
-      const latlng = L.latLng(place.lat, place.lng);
-      if (state.trike.startMarker) {
-        state.trike.startMarker.setLatLng(latlng);
-      } else {
-        state.trike.startMarker = L.marker(latlng, {
-          draggable: true,
-          icon: createMarkerIcon('A', '#10b981')
-        }).addTo(state.map);
-        state.trike.startMarker.on('dragend', updateTrikeRoute);
-      }
-      state.map.setView(latlng, 15);
-      updateTrikeRoute();
-      searchStart.blur();
-    });
+  searchStart.addEventListener('input', () => {
+    createAutocompleteDropdown(searchStart, selectStartPlace);
   });
 
   searchStart.addEventListener('keypress', async (e) => {
     if (e.key !== 'Enter') return;
     const query = e.target.value.trim();
     if (!query) return;
-    removeAutocomplete(searchStart);
+    closeAllAutocompletes();
     const latlng = await geocode(query);
     if (latlng) {
       if (state.trike.startMarker) {
@@ -1129,48 +1221,22 @@ function initEventListeners() {
     }
   });
 
-  // Autocomplete for end input
-  searchEnd.addEventListener('input', () => {
-    createAutocompleteDropdown(searchEnd, (place) => {
-      const latlng = L.latLng(place.lat, place.lng);
-      if (state.trike.endMarker) {
-        state.trike.endMarker.setLatLng(latlng);
-      } else {
-        state.trike.endMarker = L.marker(latlng, {
-          draggable: true,
-          icon: createMarkerIcon('B', '#ef4444')
-        }).addTo(state.map);
-        state.trike.endMarker.on('dragend', updateTrikeRoute);
-      }
-      state.map.setView(latlng, 15);
-      updateTrikeRoute();
-      searchEnd.blur();
-    });
+  // ── End field ────────────────────────────────────────────────────────────────
+  searchEnd.addEventListener('focus', () => {
+    // Close start-field dropdown before opening end's
+    removeAutocomplete(searchStart);
+    createAutocompleteDropdown(searchEnd, selectEndPlace);
   });
 
-  searchEnd.addEventListener('focus', () => {
-    createAutocompleteDropdown(searchEnd, (place) => {
-      const latlng = L.latLng(place.lat, place.lng);
-      if (state.trike.endMarker) {
-        state.trike.endMarker.setLatLng(latlng);
-      } else {
-        state.trike.endMarker = L.marker(latlng, {
-          draggable: true,
-          icon: createMarkerIcon('B', '#ef4444')
-        }).addTo(state.map);
-        state.trike.endMarker.on('dragend', updateTrikeRoute);
-      }
-      state.map.setView(latlng, 15);
-      updateTrikeRoute();
-      searchEnd.blur();
-    });
+  searchEnd.addEventListener('input', () => {
+    createAutocompleteDropdown(searchEnd, selectEndPlace);
   });
 
   searchEnd.addEventListener('keypress', async (e) => {
     if (e.key !== 'Enter') return;
     const query = e.target.value.trim();
     if (!query) return;
-    removeAutocomplete(searchEnd);
+    closeAllAutocompletes();
     const latlng = await geocode(query);
     if (latlng) {
       if (state.trike.endMarker) {
