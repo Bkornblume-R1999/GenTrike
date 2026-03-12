@@ -35,13 +35,13 @@ const ROUTES = {
       [6.121359557284698, 125.19027992842483]
     ],
     labels: [
-      "Airport", "Kanto Uhaw Station", "Jollibee", "GenSan Mray Logistics",
+      "Airport", "Kanto Uhaw Station", "Jollibee", "GenSan May Logistics",
       "7-Eleven Bulaong", "Husky Terminal", "RD Plaza", "Pioneer Avenue",
       "Palengke", "SM", "KCC", "Robinsons"
     ]
   },
-  'kanto-uhaw': {
-    name: 'Kanto Uhaw Route',
+  'calumpang': {
+    name: 'Calumpang Route',
     color: '#f59e0b',
     stops: [
       [6.078873108385696, 125.13528401472598],
@@ -1055,11 +1055,25 @@ function showRouteDetail(route) {
   nameEl.textContent = route.name;
   
   stopsEl.innerHTML = route.labels.map((label, idx) => `
-    <div class="stop-item">
+    <div class="stop-item clickable-stop" data-idx="${idx}" style="cursor:pointer;">
       <div class="stop-number">${idx + 1}</div>
       <div>${label}</div>
     </div>
   `).join('');
+
+  // Make each stop clickable to zoom into that stop on the map
+  stopsEl.querySelectorAll('.clickable-stop').forEach(item => {
+    item.addEventListener('click', () => {
+      const idx = parseInt(item.dataset.idx);
+      const coords = route.stops[idx];
+      if (coords) {
+        state.map.flyTo([coords[0], coords[1]], 17, { duration: 0.8 });
+        // Show tooltip on the corresponding marker
+        const marker = state.busjeep.markers[idx];
+        if (marker) marker.openTooltip();
+      }
+    });
+  });
   
   detailEl.style.display = 'block';
 }
@@ -1097,6 +1111,27 @@ function switchMode(mode) {
   }
   if (mode !== 'busjeep') {
     clearBusJeepRoute();
+    // Remove map overlay when leaving bus mode
+    const overlay = document.getElementById('map-dark-overlay');
+    if (overlay) overlay.style.display = 'none';
+  } else {
+    // Apply 20% dark overlay on map for bus mode
+    let overlay = document.getElementById('map-dark-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'map-dark-overlay';
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.22);pointer-events:none;z-index:399;transition:opacity 0.3s;';
+      document.body.appendChild(overlay);
+    }
+    overlay.style.display = 'block';
+
+    // Auto-select Uhaw route
+    setTimeout(() => {
+      document.querySelectorAll('.route-card').forEach(c => c.classList.remove('selected'));
+      const uhawCard = document.querySelector('.route-card[data-route="uhaw"]');
+      if (uhawCard) uhawCard.classList.add('selected');
+      showRoute('uhaw');
+    }, 100);
   }
   
   const panel = document.getElementById('control-panel');
@@ -1353,6 +1388,105 @@ function initEventListeners() {
     clearBusJeepRoute();
     document.querySelectorAll('.route-card').forEach(c => c.classList.remove('selected'));
     showToast('Route cleared');
+  });
+
+  // ── Nearest Place Feature ────────────────────────────────────────────────────
+  const NEAREST_CATEGORIES = [
+    { label: 'All', tag: null },
+    { label: 'Malls', tag: 'mall' },
+    { label: 'Hospitals', tag: 'Hospital' },
+    { label: 'Schools', tag: 'School' },
+    { label: 'Markets', tag: 'Market' },
+    { label: 'Hotels', tag: 'Hotel' },
+    { label: 'Transport', tag: 'Bus' },
+    { label: 'Restaurants', tag: 'restaurant' },
+    { label: 'Parks', tag: 'Park' },
+    { label: 'Government', tag: 'Government' },
+  ];
+
+  let nearestActiveCat = null;
+
+  function renderNearestCategories() {
+    const catEl = document.getElementById('nearest-categories');
+    catEl.innerHTML = NEAREST_CATEGORIES.map(c => `
+      <button class="nearest-cat-btn${nearestActiveCat === c.tag ? ' active' : ''}" data-tag="${c.tag || ''}">
+        ${c.label}
+      </button>
+    `).join('');
+    catEl.querySelectorAll('.nearest-cat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        nearestActiveCat = btn.dataset.tag || null;
+        renderNearestCategories();
+        renderNearestResults();
+      });
+    });
+  }
+
+  function renderNearestResults() {
+    const resultsEl = document.getElementById('nearest-results');
+    let places = GENSAN_PLACES;
+    if (nearestActiveCat) {
+      places = GENSAN_PLACES.filter(p =>
+        p.tags.some(t => t.toLowerCase() === nearestActiveCat.toLowerCase())
+      );
+    }
+    // If user location available, sort by distance
+    const userLoc = state.trike.startMarker ? state.trike.startMarker.getLatLng() : null;
+    if (userLoc) {
+      places = [...places].sort((a, b) => {
+        const dA = Math.hypot(a.lat - userLoc.lat, a.lng - userLoc.lng);
+        const dB = Math.hypot(b.lat - userLoc.lat, b.lng - userLoc.lng);
+        return dA - dB;
+      });
+    }
+    places = places.slice(0, 30);
+
+    if (places.length === 0) {
+      resultsEl.innerHTML = '<div style="padding:14px;text-align:center;font-size:13px;color:#737373;">No places found</div>';
+      return;
+    }
+
+    resultsEl.innerHTML = places.map(p => `
+      <div class="nearest-result-item" data-name="${p.name}" data-lat="${p.lat}" data-lng="${p.lng}">
+        <div class="nearest-result-dot"></div>
+        <span>${p.name}</span>
+      </div>
+    `).join('');
+
+    resultsEl.querySelectorAll('.nearest-result-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const place = { name: item.dataset.name, lat: parseFloat(item.dataset.lat), lng: parseFloat(item.dataset.lng) };
+        selectEndPlace(place);
+        document.getElementById('nearest-panel').style.display = 'none';
+        const endLbl = document.getElementById('end-display');
+        if (endLbl) { endLbl.textContent = place.name; endLbl.classList.remove('is-placeholder'); }
+      });
+    });
+  }
+
+  const nearestBtn = document.getElementById('nearest-place-btn');
+  const nearestPanel = document.getElementById('nearest-panel');
+  const nearestCloseBtn = document.getElementById('nearest-close');
+
+  nearestBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isVisible = nearestPanel.style.display !== 'none';
+    nearestPanel.style.display = isVisible ? 'none' : 'block';
+    if (!isVisible) {
+      nearestActiveCat = null;
+      renderNearestCategories();
+      renderNearestResults();
+    }
+  });
+
+  nearestCloseBtn.addEventListener('click', () => {
+    nearestPanel.style.display = 'none';
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!nearestPanel.contains(e.target) && e.target !== nearestBtn) {
+      nearestPanel.style.display = 'none';
+    }
   });
 }
 
