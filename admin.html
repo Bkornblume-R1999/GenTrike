@@ -166,6 +166,16 @@
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1f2937; color: white; padding: 10px 20px; border-radius: 99px; font-size: 14px; font-weight: 500; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s; opacity: 0; pointer-events: none; z-index: 9999; white-space: nowrap; }
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
+    .col-action { width: 48px; text-align: center; }
+    .delete-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); padding: 6px; border-radius: 6px;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      font-size: 16px; line-height: 1;
+    }
+    .delete-btn:hover { background: var(--danger-light); color: var(--danger); }
+
     @media (max-width: 600px) {
       .container { padding: 16px 14px 48px; }
       .topbar { padding: 0 14px; }
@@ -183,7 +193,7 @@
     <div class="login-title">Admin Panel</div>
     <div class="login-subtitle">Geo GenSan • Tricycle Reports</div>
     <label class="login-label" for="login-input">Password</label>
-    <input type="password" class="login-input" id="login-input" placeholder="••••••••" maxlength="8" autocomplete="off">
+    <input type="password" class="login-input" id="login-input" placeholder="••••••••" maxlength="20" autocomplete="off">
     <div class="login-error" id="login-error"></div>
     <button class="login-btn" id="login-btn">Login</button>
   </div>
@@ -243,10 +253,11 @@
               <th>Date &amp; Time</th>
               <th>Type</th>
               <th>Description</th>
+              <th class="col-action"></th>
             </tr>
           </thead>
           <tbody id="reports-tbody">
-            <tr><td colspan="6"><div class="loading-state"><div class="spinner-sm"></div>Loading reports...</div></td></tr>
+            <tr><td colspan="7"><div class="loading-state"><div class="spinner-sm"></div>Loading reports...</div></td></tr>
           </tbody>
         </table>
       </div>
@@ -292,7 +303,26 @@
   const TYPE_CLASSES = { 'Overcharging':'overcharging','Reckless Driving':'reckless','Refusal of Service':'refusal','Verbal Abuse':'verbal','Unsafe Vehicle':'unsafe','Other':'other' };
   const TYPE_ICONS   = { 'Overcharging':'💸','Reckless Driving':'🚗','Refusal of Service':'🚫','Verbal Abuse':'🗣️','Unsafe Vehicle':'⚠️','Other':'📋' };
 
-  // ── Render table ──────────────────────────────────────────────────────────
+  // ── Firebase delete ───────────────────────────────────────────────────────
+  async function fbDelete(key) {
+    const res = await fetch(`${FIREBASE_DB_URL}/reports/${key}.json`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Firebase delete failed');
+  }
+
+  async function deleteReport(key) {
+    if (!confirm('Delete this report? This cannot be undone.')) return;
+    try {
+      await fbDelete(key);
+      allReports = allReports.filter(r => r._key !== key);
+      renderTable(document.getElementById('filter-type')?.value || '');
+      showToast('🗑️ Report deleted');
+    } catch (err) {
+      console.error('Delete error:', err);
+      showToast('❌ Failed to delete report');
+    }
+  }
+
+
   let allReports = [];
 
   function renderTable(filterType = '') {
@@ -317,7 +347,7 @@
     let filtered = filterType ? allReports.filter(r => r.type === filterType) : allReports;
 
     if (filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">📭</div><p>${filterType ? 'No reports of this type.' : 'No reports yet.'}</p></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div><p>${filterType ? 'No reports of this type.' : 'No reports yet.'}</p></div></td></tr>`;
       return;
     }
 
@@ -334,12 +364,18 @@
         <td class="col-date">${escapeHtml(r.date || '—')}</td>
         <td><span class="type-badge ${cls}">${icon} ${escapeHtml(r.type)}</span></td>
         <td class="col-desc">${escapeHtml(r.description)}</td>
+        <td class="col-action"><button class="delete-btn" data-key="${escapeHtml(r._key)}" title="Delete report">🗑️</button></td>
       </tr>`;
     }).join('');
 
     // Thumbnail click → lightbox
     tbody.querySelectorAll('.report-thumb').forEach(img => {
       img.addEventListener('click', () => openLightbox(img.dataset.src));
+    });
+
+    // Delete button click
+    tbody.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => deleteReport(btn.dataset.key));
     });
   }
 
@@ -363,7 +399,7 @@
       console.error('Load error:', err);
       if (isFirstLoad) {
         document.getElementById('reports-tbody').innerHTML =
-          `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">⚠️</div><p>Failed to load reports. Check connection.</p></div></td></tr>`;
+          `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">⚠️</div><p>Failed to load reports. Check connection.</p></div></td></tr>`;
       }
     }
   }
