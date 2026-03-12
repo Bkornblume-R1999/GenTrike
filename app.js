@@ -194,10 +194,12 @@ function createMarkerIcon(label, color) {
 // ─── GENSAN KEY PLACES DATABASE ───────────────────────────────────────────────
 const GENSAN_PLACES = [
   // Malls & Commercial
-  { name: 'SM City General Santos', lat: 6.1152, lng: 125.1856, tags: ['sm', 'mall', 'shopping'] },
-  { name: 'KCC Mall of GenSan', lat: 6.1172, lng: 125.1858, tags: ['kcc', 'mall', 'robinson'] },
-  { name: 'Robinsons Place GenSan', lat: 6.1185, lng: 125.1902, tags: ['robinsons', 'mall'] },
-  { name: 'Gaisano Mall General Santos', lat: 6.1090, lng: 125.1734, tags: ['gaisano', 'mall'] },
+  { name: 'SM Mall of GenSan', lat: 6.11615, lng: 125.18107, tags: ['mall', 'shopping', 'arcade', 'resturants'] },
+  { name: 'KCC Mall of GenSan', lat: 6.11605, lng: 125.18691, tags: ['mall', 'shopping', 'arcade', 'resturants'] },
+  { name: 'Robinsons Mall of GenSan', lat: 6.12099, lng: 125.19069, tags: ['mall', 'shopping', 'arcade', 'resturants'] },
+  { name: 'Gaisano Mall of GenSan', lat: 6.11727, lng: 125.18437, tags: ['mall', 'shopping', 'resturants'] },
+  { name: 'Fit Mart Mall of GenSan', lat: 6.11237, lng: 125.16923, tags: ['mall', 'shopping'] },
+  { name: 'Veranza Mall', lat: 6.11600, lng: 125.18852, tags: ['mall', 'arcade', 'resturants'] },
   // Hospitals
   { name: 'Mindanao Medical Center', lat: 6.1078, lng: 125.1774, tags: ['hospital', 'mmc', 'medical'] },
   { name: 'South Cotabato Provincial Hospital', lat: 6.1071, lng: 125.1700, tags: ['hospital', 'provincial'] },
@@ -1363,3 +1365,4 @@ window.addEventListener('resize', () => {
     state.map.invalidateSize();
   }
 });
+
