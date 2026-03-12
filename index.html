@@ -18,7 +18,6 @@
   <!-- Floating header -->
   <header class="floating-header">
     <div class="logo">
-      <img src="1772574570013_image.png" alt="BKORN" class="logo-icon">
       <div class="logo-text">
         <h1>Geo Gensan</h1>
         <p>Don't get lost</p>
@@ -170,6 +169,19 @@
               >
               <span class="input-label" id="end-display">Tap map or search</span>
             </div>
+            <button class="nearest-btn" id="nearest-place-btn" title="Choose a nearby tagged place">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </button>
+          </div>
+
+          <!-- Nearest Place Picker Panel -->
+          <div class="nearest-panel" id="nearest-panel" style="display:none;">
+            <div class="nearest-panel-header">
+              <span>Nearby Places</span>
+              <button class="nearest-close" id="nearest-close">✕</button>
+            </div>
+            <div class="nearest-categories" id="nearest-categories"></div>
+            <div class="nearest-results" id="nearest-results"></div>
           </div>
         </div>
 
@@ -236,16 +248,16 @@
               <h3 class="route-name">Uhaw Route</h3>
               <p class="route-stops">12 stops • Airport to Robinsons</p>
             </div>
-            <div class="route-fare">₱30-35</div>
+            <div class="route-fare">₱30</div>
           </button>
 
-          <button class="route-card" data-route="kanto-uhaw">
+          <button class="route-card" data-route="calumpang">
             <div class="route-badge yellow">🟡</div>
             <div class="route-info">
-              <h3 class="route-name">Kanto Uhaw Route</h3>
+              <h3 class="route-name">Calumpang Route</h3>
               <p class="route-stops">8 stops • Lado to Lagao Market</p>
             </div>
-            <div class="route-fare">₱30-35</div>
+            <div class="route-fare">₱30</div>
           </button>
 
           <button class="route-card" data-route="mabuhay">
@@ -254,7 +266,7 @@
               <h3 class="route-name">Mabuhay Route</h3>
               <p class="route-stops">10 stops • Market to Mabuhay</p>
             </div>
-            <div class="route-fare">₱30-35</div>
+            <div class="route-fare">₱30</div>
           </button>
         </div>
 
@@ -267,7 +279,7 @@
         </div>
 
         <div class="info-box">
-          <strong>Variable Fare:</strong> Bus & jeep fares typically range from ₱30-35 depending on distance traveled. Fares vary by route and distance from your boarding point to destination. Always confirm the fare with your driver before paying.
+          <strong>Minimum Fare: ₱30</strong> Bus & jeep fares start at ₱30. Fares may vary depending on distance traveled. Always confirm the fare with your driver before paying.
         </div>
 
         <div class="warning-box">
@@ -640,7 +652,6 @@
         </div>
 
         <div class="branding">
-          <img src="1772574570013_image.png" alt="BKORN Studios" class="branding-logo">
           <div class="branding-text">
             <strong>BKORN</strong>
             <span>STUDIOS</span>
