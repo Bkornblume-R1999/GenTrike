@@ -201,42 +201,78 @@ const GENSAN_PLACES = [
   { name: 'Fit Mart Mall of GenSan', lat: 6.11237, lng: 125.16923, tags: ['mall', 'shopping'] },
   { name: 'Veranza Mall', lat: 6.11600, lng: 125.18852, tags: ['mall', 'arcade', 'resturants'] },
   // Hospitals
-  { name: 'Mindanao Medical Center', lat: 6.1078, lng: 125.1774, tags: ['hospital', 'mmc', 'medical'] },
-  { name: 'South Cotabato Provincial Hospital', lat: 6.1071, lng: 125.1700, tags: ['hospital', 'provincial'] },
-  { name: 'Notre Dame Hospital', lat: 6.1041, lng: 125.1786, tags: ['hospital', 'notre dame'] },
-  { name: 'General Santos Doctors Hospital', lat: 6.1101, lng: 125.1780, tags: ['hospital', 'doctors'] },
+  { name: 'St.Elizabeth Hospital', lat: 6.11821, lng: 125.17995, tags: ['Hospital', 'Clinic'] },
+  { name: 'GenSan Doctors Hospital', lat: 6.12011, lng: 125.17839, tags: ['Hospital', 'Clinic'] },
+  { name: 'Mindanao Medical Center', lat: 6.12801, lng: 125.15985, tags: ['Hospital', 'Clinic'] },
+  { name: 'Dadiangas Medical Center', lat: 6.12465, lng: 125.17772, tags: ['Hospital', 'Clinic'] },
+  { name: 'Dr. Jorge P. Royeca Hospital', lat: 6.12568, lng: 125.18583, tags: ['Hospital', 'Clinic'] },
+  { name: 'Socsargen County Hospital', lat: 6.11827, lng: 125.18984, tags: ['Hospital', 'Clinic'] },
+  { name: 'Gensan Medical Center', lat: 6.08247, lng: 125.14768, tags: ['Hospital', 'Clinic'] },
+  { name: 'Peuriculture Hospital', lat: 6.11360, lng: 125.17121, tags: ['Hospital', 'Clinic'] },
+  { name: 'Auguis Clinic & Hospital', lat: 6.11299, lng: 125.16777, tags: ['Hospital', 'Clinic'] },
+  { name: 'R. O. Diagan Community Hospital', lat: 6.11447, lng: 125.16717, tags: ['Hospital', 'Clinic'] },
+  { name: 'Yap clinic', lat: 6.11536, lng: 125.17336, tags: ['Clinic'] },
+  { name: 'Mercury Drugstore, Irineo Santiago Boulevard', lat: 6.11779, lng: 125.17973, tags: ['Pharmacy'] },
+  { name: 'Decolongon Pharmacy', lat: 6.11821, lng: 125.17912, tags: ['Pharmacy'] },
+  { name: 'Navis Pharmacy', lat: 6.11289, lng: 125.16905, tags: ['Pharmacy'] },
+  { name: 'Mercury Drugstore, Pioneer ', lat: 6.10889, lng: 125.17153, tags: ['Pharmacy'] },
+  { name: 'Rosa Pharmacy, Pioneer', lat: 6.10903, lng: 125.17147, tags: ['Pharmacy'] },
+  { name: 'Rose Pharmacy, Digos-Makar Road', lat: 6.11913, lng: 125.17960, tags: ['Pharmacy'] },
+  { name: 'Rojon Pharmacy, Cagampang Street', lat: 6.10844, lng: 125.17971, tags: ['Pharmacy'] },
   // Schools / Universities
-  { name: 'Notre Dame of Dadiangas University', lat: 6.1050, lng: 125.1786, tags: ['nddu', 'university', 'college', 'notre dame'] },
-  { name: 'University of Southern Mindanao GenSan', lat: 6.1100, lng: 125.1701, tags: ['usm', 'university', 'college'] },
-  { name: 'General Santos City National High School', lat: 6.1040, lng: 125.1762, tags: ['high school', 'nhs'] },
-  { name: 'STI College General Santos', lat: 6.1087, lng: 125.1797, tags: ['sti', 'college'] },
+  { name: 'Goldenstate Little College, Malakas', lat: 6.13820, lng: 125.16848, tags: ['GLC', 'School'] },
+  { name: 'Montessori School of General Santos City', lat: 6.13605, lng: 125.16522, tags: ['School'] },
+  { name: 'Lagao National High School', lat: 6.13483, lng: 125.17133, tags: ['School'] },
+  { name: 'New Era University', lat: 6.13672, lng: 125.17091, tags: ['School', 'University'] },
+  { name: 'Quantum Academy Inc.', lat: 6.13914, lng: 125.17980, tags: ['School'] },
+  { name: 'GSC SPED Integrated School, Lagao', lat: 6.14550, lng: 125.18554, tags: ['School'] },
+  { name: 'Lagao National High School – Annex', lat: 6.14475, lng: 125.18569, tags: ['School'] },
+  { name: 'STI College, GenSan', lat: 6.11471, lng: 125.18297, tags: ['School'] },
+  { name: 'Stratford International School', lat: 6.11359, lng: 125.18419, tags: ['School'] },
+  { name: 'Notre Dame of Dadiangas University', lat: 6.11748, lng: 125.17165, tags: ['NDDU', 'Unversity'] },
+  { name: 'Mindanao State University - General Santos', lat: 6.11652, lng: 125.17171, tags: ['MSU', 'University'] },
+  { name: 'RMMC School', lat: 6.11175, lng: 125.17388, tags: ['Ramon', 'School'] },
+  { name: 'Goldenstate College, Acharon Boulevard', lat: 6.10716, lng: 125.17251, tags: ['GLC', 'School'] },
+  { name: 'GSC SPED Integrated School, Quezon', lat: 6.11041, lng: 125.16766, tags: ['School'] },
+  { name: 'Holy Trinity College', lat: 6.11334, lng: 125.16877, tags: ['School'] },
+  { name: 'Dadiangas North Elementary School', lat: 6.11583, lng: 125.16735, tags: ['School'] },
+  { name: 'Dadiangas East Elementary School', lat: 6.11625, lng: 125.17703, tags: ['School'] },
+  { name: 'Dadiangas South Central Elementary School', lat: 6.11035, lng: 125.17582, tags: ['School'] },
+  { name: 'Dadiangas West Central Elementary School', lat: 6.10963, lng: 125.16911, tags: ['School'] },
+  { name: 'Notre Dame Dadiangas University, Lagao Gensan', lat: 6.12437, lng: 125.19643, tags: ['University', 'NDDU'] },
   // Transport / Terminals
-  { name: 'General Santos Airport (Francisco Bangoy)', lat: 6.0583, lng: 125.0959, tags: ['airport', 'bangoy', 'flights'] },
-  { name: 'Bulaong Bus Terminal', lat: 6.1186, lng: 125.1610, tags: ['bus', 'terminal', 'bulaong'] },
-  { name: 'Tambler Bus Terminal', lat: 6.0831, lng: 125.1353, tags: ['bus', 'terminal', 'tambler'] },
-  { name: 'Husky Terminal', lat: 6.1131, lng: 125.1641, tags: ['terminal', 'husky'] },
+  { name: 'Bulaong Terminal', lat: 6.11335, lng: 125.16237, tags: ['Bus', 'Van'] },
+  { name: 'Husky Terminal', lat: 6.11326, lng: 125.16428, tags: ['Bus', 'Transport', 'Delivery'] },
+  { name: 'Yellow Bus Terminal, Gensan', lat: 6.11950, lng: 125.17742, tags: ['Bus'] },
+  { name: 'KCC Van Terminal, Gensan', lat: 6.11609, lng: 125.18948, tags: ['Van'] },
+  { name: 'Lagao Public Terminal', lat: 6.12740, lng: 125.19633, tags: ['Van', 'Bus', 'Jeep'] },
+  { name: 'International Airport, GenSan', lat: 6.05762, lng: 125.10083, tags: ['Airport', 'Plane'] },
+  { name: 'Port of General Santos', lat: 6.09277, lng: 125.15536, tags: ['Port', 'Boat', 'Ferry'] },
   // Government
-  { name: 'City Hall General Santos', lat: 6.1082, lng: 125.1728, tags: ['city hall', 'government'] },
-  { name: 'Hall of Justice General Santos', lat: 6.1073, lng: 125.1742, tags: ['hall of justice', 'court', 'government'] },
-  { name: 'GenSan City Police Station', lat: 6.1085, lng: 125.1731, tags: ['police', 'pnp', 'station'] },
+  { name: 'City Hall of GenSan', lat: 6.11302, lng: 125.17173, tags: ['Government'] },
+  { name: 'Senior Citizens Office, GenSan', lat: 6.11440, lng: 125.17221, tags: ['Government'] },
+  { name: 'General Santos City Public Library', lat: 6.11456, lng: 125.17184, tags: ['Government', 'Library'] },
+  { name: 'Fire Station, GenSan', lat: 6.11457, lng: 125.17067, tags: ['Government', 'Fire Station', 'Emergency'] },
+  { name: 'Police Station 1, GenSan', lat: 6.11396, lng: 125.17063, tags: ['Government', 'Emergency', 'Police'] },
+  { name: 'Legislative Building, Gensan', lat: 6.11322, lng: 125.17298, tags: ['Government'] },
+  { name: 'Philippine Statistics Authority, Gensan', lat: 6.11384, lng: 125.18006, tags: ['PSA', 'Government'] },
+  { name: 'National Bureau of Investigation,Gensan', lat: 6.12568, lng: 125.19250, tags: ['BRI', 'Government'] },
+  { name: 'Hall of Justice, Gensan', lat: 6.12657, lng: 125.19856, tags: ['Government'] },
   // Markets
-  { name: 'GenSan Public Market (CBD)', lat: 6.1073, lng: 125.1715, tags: ['public market', 'palengke', 'cbd'] },
-  { name: 'Lagao Public Market', lat: 6.1276, lng: 125.1963, tags: ['lagao', 'market', 'palengke'] },
-  { name: 'Bawing Public Market', lat: 6.0852, lng: 125.1399, tags: ['bawing', 'market'] },
+  { name: 'GenSan Public Market', lat: 6.10790, lng: 125.17848, tags: ['Market'] },
+  { name: ' Bagsakan Market', lat: 6.11017, lng: 125.18225, tags: ['Market'] },
+  { name: 'SM Savemore Market,  Yumang', lat: 6.13274, lng: 125.16061, tags: ['Market'] },
+  { name: 'SM Savemore Market,  Nuñez ', lat: 6.13831, lng: 125.17002, tags: ['Market'] },
+  { name: 'Lagao Public Market', lat: 6.12732, lng: 125.19660, tags: ['Market'] },
+  { name: 'SM Savemore Market, Calumpang', lat: 6.07740, lng: 125.14651, tags: ['Market'] },
   // Parks & Landmarks
-  { name: 'Oval Plaza General Santos', lat: 6.1082, lng: 125.1717, tags: ['oval', 'plaza', 'park', 'landmark'] },
-  { name: "People's Park GenSan", lat: 6.1084, lng: 125.1718, tags: ['park', 'people'] },
-  { name: 'GenSan Fish Port Complex', lat: 6.0954, lng: 125.1655, tags: ['fish port', 'port', 'fishing'] },
-  { name: 'Manny Pacquiao Museum', lat: 6.1078, lng: 125.1720, tags: ['pacquiao', 'museum', 'landmark'] },
-  // Barangays / Districts — GenSan
-  { name: 'Barangay Lagao', lat: 6.1276, lng: 125.1963, tags: ['lagao', 'barangay'] },
-  { name: 'Barangay Labangal', lat: 6.0987, lng: 125.1593, tags: ['labangal', 'barangay'] },
-  { name: 'Barangay Calumpang', lat: 6.1048, lng: 125.1683, tags: ['calumpang', 'barangay'] },
-  { name: 'Barangay Bula', lat: 6.1150, lng: 125.1600, tags: ['bula', 'barangay'] },
-  { name: 'Barangay Dadiangas West', lat: 6.1087, lng: 125.1706, tags: ['dadiangas', 'west', 'barangay'] },
-  { name: 'Barangay Tambler', lat: 6.0741, lng: 125.1252, tags: ['tambler', 'barangay'] },
-  { name: 'Barangay Apopong', lat: 6.1247, lng: 125.1541, tags: ['apopong', 'barangay'] },
-  { name: 'Barangay Buayan', lat: 6.1318, lng: 125.1724, tags: ['buayan', 'barangay'] },
+  { name: 'Carlos P. Garcia Freedom Park', lat: 6.11538, lng: 125.17177, tags: ['Park', 'Plaza'] },
+  { name: 'Plaza Heneral Santos', lat: 6.11214, lng: 125.17179, tags: ['Park', 'Plaza'] },
+  { name: 'Queen Tuna Park', lat: 6.10678, lng: 125.17574, tags: ['Park', 'Beach'] },
+  { name: 'Pacman Mansion 2', lat: 6.12767, lng: 125.16759, tags: ['Landmark'] },
+  { name: 'Japanese abandoned World War 2 Bunker', lat: 6.14836, lng: 125.15902, tags: ['Landmark', 'Historical'] },
+  { name: 'Pacman Mansion', lat: 6.13345, lng: 125.18503, tags: ['Landmark'] },
+  { name: 'Lagao Gym,', lat: 6.13178, lng: 125.18373, tags: ['Gymnasium', 'landmark'] },
   // Hotels
   { name: 'Hotel Heneral Santos', lat: 6.1076, lng: 125.1718, tags: ['hotel', 'heneral'] },
   { name: 'Ceresita Fine Hotel Labangal', lat: 6.0985, lng: 125.1569, tags: ['hotel', 'ceresita', 'labangal'] },
@@ -246,48 +282,7 @@ const GENSAN_PLACES = [
   { name: 'National Highway GenSan', lat: 6.1062, lng: 125.1654, tags: ['national highway', 'highway'] },
   { name: 'Jollibee Pioneer Avenue', lat: 6.1073, lng: 125.1767, tags: ['jollibee', 'pioneer'] },
 
-  // ── SOUTH COTABATO MUNICIPALITIES ─────────────────────────────────────────
-  // Koronadal City (provincial capital)
-  { name: 'Koronadal City', lat: 6.5028, lng: 124.8469, tags: ['koronadal', 'marbel', 'capital', 'south cotabato'] },
-  { name: 'Koronadal City Hall', lat: 6.5021, lng: 124.8461, tags: ['koronadal', 'city hall', 'government', 'marbel'] },
-  { name: 'South Cotabato Capitol', lat: 6.5035, lng: 124.8477, tags: ['capitol', 'provincial', 'south cotabato', 'koronadal'] },
-  { name: 'Notre Dame of Marbel University', lat: 6.4980, lng: 124.8443, tags: ['ndmu', 'marbel', 'university', 'koronadal'] },
-  { name: 'Koronadal Public Market', lat: 6.5019, lng: 124.8450, tags: ['koronadal', 'market', 'palengke', 'marbel'] },
-  { name: 'South Cotabato Provincial Hospital', lat: 6.5030, lng: 124.8500, tags: ['hospital', 'south cotabato', 'koronadal'] },
-  // Tupi
-  { name: 'Tupi, South Cotabato', lat: 6.3328, lng: 125.0253, tags: ['tupi', 'municipality', 'south cotabato'] },
-  { name: 'Tupi Public Market', lat: 6.3325, lng: 125.0248, tags: ['tupi', 'market', 'palengke'] },
-  { name: 'Tupi Municipal Hall', lat: 6.3330, lng: 125.0255, tags: ['tupi', 'municipal hall', 'government'] },
-  // Polomolok
-  { name: 'Polomolok, South Cotabato', lat: 6.2152, lng: 125.0731, tags: ['polomolok', 'municipality', 'south cotabato'] },
-  { name: 'Polomolok Public Market', lat: 6.2148, lng: 125.0726, tags: ['polomolok', 'market'] },
-  { name: 'Dole Philippines Polomolok', lat: 6.2180, lng: 125.0800, tags: ['dole', 'polomolok', 'pineapple', 'plantation'] },
-  // Surallah
-  { name: 'Surallah, South Cotabato', lat: 6.3642, lng: 124.7397, tags: ['surallah', 'municipality', 'south cotabato'] },
-  { name: 'Surallah Public Market', lat: 6.3639, lng: 124.7393, tags: ['surallah', 'market', 'palengke'] },
-  { name: 'Surallah Municipal Hall', lat: 6.3645, lng: 124.7400, tags: ['surallah', 'municipal hall', 'government'] },
-  // Lake Sebu
-  { name: 'Lake Sebu, South Cotabato', lat: 6.2630, lng: 124.6650, tags: ['lake sebu', 'municipality', 'south cotabato', 'tboli'] },
-  { name: "Lake Sebu (Seloton)", lat: 6.2617, lng: 124.6633, tags: ['lake sebu', 'lake', 'tourism', 'tboli'] },
-  { name: "Seven Falls Lake Sebu", lat: 6.2700, lng: 124.6580, tags: ['seven falls', 'lake sebu', 'falls', 'tourism', 'zipline'] },
-  // T'boli
-  { name: "T'boli, South Cotabato", lat: 6.1202, lng: 124.5818, tags: ['tboli', 'municipality', 'south cotabato'] },
-  // Banga
-  { name: 'Banga, South Cotabato', lat: 6.2997, lng: 124.7822, tags: ['banga', 'municipality', 'south cotabato'] },
-  { name: 'Banga Municipal Hall', lat: 6.2994, lng: 124.7818, tags: ['banga', 'municipal hall', 'government'] },
-  // Santo Niño
-  { name: 'Santo Niño, South Cotabato', lat: 6.4294, lng: 124.8001, tags: ['santo nino', 'municipality', 'south cotabato'] },
-  // Norala
-  { name: 'Norala, South Cotabato', lat: 6.4650, lng: 124.6681, tags: ['norala', 'municipality', 'south cotabato'] },
-  // Tantangan
-  { name: 'Tantangan, South Cotabato', lat: 6.3892, lng: 124.9014, tags: ['tantangan', 'municipality', 'south cotabato'] },
-  // Tampakan
-  { name: 'Tampakan, South Cotabato', lat: 6.4667, lng: 124.9906, tags: ['tampakan', 'municipality', 'south cotabato'] },
-  // Sto. Niño (different from above — Lambayong)
-  { name: 'Lambayong (Moises Padilla), South Cotabato', lat: 6.5522, lng: 124.6506, tags: ['lambayong', 'moises padilla', 'municipality', 'south cotabato'] },
-  // Key regional roads
-  { name: 'Cotabato-General Santos Highway', lat: 6.3500, lng: 124.9500, tags: ['highway', 'national road', 'south cotabato'] },
-];
+  
 
 // ─── SEARCH HISTORY ────────────────────────────────────────────────────────────
 const MAX_HISTORY = 4;
@@ -1365,4 +1360,5 @@ window.addEventListener('resize', () => {
     state.map.invalidateSize();
   }
 });
+
 
