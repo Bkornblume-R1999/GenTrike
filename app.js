@@ -194,10 +194,10 @@ function createMarkerIcon(label, color) {
 // ─── GENSAN KEY PLACES DATABASE ───────────────────────────────────────────────
 const GENSAN_PLACES = [
   // Malls & Commercial
-  { name: 'SM Mall of GenSan', lat: 6.11615, lng: 125.18107, tags: ['mall', 'shopping', 'arcade', 'resturants'] },
-  { name: 'KCC Mall of GenSan', lat: 6.11605, lng: 125.18691, tags: ['mall', 'shopping', 'arcade', 'resturants'] },
-  { name: 'Robinsons Mall of GenSan', lat: 6.12099, lng: 125.19069, tags: ['mall', 'shopping', 'arcade', 'resturants'] },
-  { name: 'Gaisano Mall of GenSan', lat: 6.11727, lng: 125.18437, tags: ['mall', 'shopping', 'resturants'] },
+  { name: 'SM Mall of GenSan', lat: 6.11615, lng: 125.18107, tags: ['mall', 'shopping', 'arcade', 'restuarants'] },
+  { name: 'KCC Mall of GenSan', lat: 6.11605, lng: 125.18691, tags: ['mall', 'shopping', 'arcade', 'restuarants'] },
+  { name: 'Robinsons Mall of GenSan', lat: 6.12099, lng: 125.19069, tags: ['mall', 'shopping', 'arcade', 'restuarants'] },
+  { name: 'Gaisano Mall of GenSan', lat: 6.11727, lng: 125.18437, tags: ['mall', 'shopping', 'restuarants'] },
   { name: 'Fit Mart Mall of GenSan', lat: 6.11237, lng: 125.16923, tags: ['mall', 'shopping'] },
   { name: 'Veranza Mall', lat: 6.11600, lng: 125.18852, tags: ['mall', 'arcade', 'resturants'] },
   // Hospitals
@@ -274,13 +274,43 @@ const GENSAN_PLACES = [
   { name: 'Pacman Mansion', lat: 6.13345, lng: 125.18503, tags: ['Landmark'] },
   { name: 'Lagao Gym,', lat: 6.13178, lng: 125.18373, tags: ['Gymnasium', 'landmark'] },
   // Hotels
-  { name: 'Hotel Heneral Santos', lat: 6.1076, lng: 125.1718, tags: ['hotel', 'heneral'] },
-  { name: 'Ceresita Fine Hotel Labangal', lat: 6.0985, lng: 125.1569, tags: ['hotel', 'ceresita', 'labangal'] },
-  { name: 'Phela Grande Convention Center', lat: 6.1143, lng: 125.1852, tags: ['hotel', 'phela', 'convention'] },
-  // Roads / Key Junctions
-  { name: 'Pioneer Avenue', lat: 6.1073, lng: 125.1757, tags: ['pioneer', 'avenue', 'street'] },
-  { name: 'National Highway GenSan', lat: 6.1062, lng: 125.1654, tags: ['national highway', 'highway'] },
-  { name: 'Jollibee Pioneer Avenue', lat: 6.1073, lng: 125.1767, tags: ['jollibee', 'pioneer'] },
+  { name: 'Green Leaf Hotel', lat: 6.11470, lng: 125.18220, tags: ['Hotel', 'Pool', 'Restaurant', 'Venue'] },
+  { name: 'Grand Imperial Hotel', lat: 6.11970, lng: 125.18958, tags: ['Hotel', 'Pool', 'Casino', 'Venue'] },
+  { name: 'T Boli Hotel', lat: 6.11903, lng: 125.17770, tags: ['Hotel'] },
+  { name: 'Tierra Montana Hotel', lat: 6.11894, lng: 125.17629, tags: ['Hotel'] },
+  { name: 'Florotel', lat: 6.11601, lng: 125.17001, tags: ['Hotel'] },
+  { name: 'Pearl Suites', lat: 6.12875, lng: 125.18166, tags: ['Hotel'] },
+  { name: 'Phela Grande Hotel', lat: 6.10943, lng: 125.17037, tags: ['Hotel'] },
+  { name: 'Sydney Hotel', lat: 6.11129, lng: 125.17133, tags: ['Hotel'] },
+  { name: 'Hotel Dolores', lat: 6.10896, lng: 125.17936, tags: ['Hotel'] },
+  { name: 'Sun City Suites', lat: 6.11906, lng: 125.18320, tags: ['Hotel', 'Suites'] },
+  { name: 'Microtel Inn & Suites', lat: 6.12005, lng: 125.17986, tags: ['Hotel', 'Inn', 'Suites'] },
+  { name: 'Zanrock Hotel', lat: 6.12683, lng: 125.19278, tags: ['Hotel'] },
+  { name: 'Agents Lodging House', lat: 6.12581, lng: 125.19303, tags: ['Hotel', 'Suites'] },
+  { name: 'Alonzo Pensionne', lat: 6.11829, lng: 125.19305, tags: ['Hotel', 'Guest house'] },
+  { name: 'Have Pension Hauz', lat: 6.11474, lng: 125.17492, tags: ['Hotel', 'Guest house'] },
+  { name: 'Casa Rafael Business Inn', lat: 6.11267, lng: 125.17709, tags: ['Hotel'] },
+  { name: 'Soler Hotel', lat: 6.11394, lng: 125.17923, tags: ['Hotel'] },
+  { name: 'Hotel Filipino', lat: 6.11430, lng: 125.17924, tags: ['Hotel'] },
+  { name: 'Jovinaj Travellers Inn', lat: 6.11132, lng: 125.18577, tags: ['Hotel', 'Inn'] },
+  { name: 'Matutum Hotel & Restaurant', lat: 6.10709, lng: 125.17347, tags: ['Hotel', 'Restaurant'] },
+  { name: 'Roadhaus hotel', lat: 6.12249, lng: 125.17192, tags: ['Hotel'] },
+  // Restaurant
+  { name: 'McDonalds, Digos-Makar Road', lat: 6.11912, lng: 125.17981, tags: [] },
+  { name: 'Chowking, Digos-Makar Road', lat: 6.11909, lng: 125.17925, tags: [] },
+  { name: 'Mang Inasal, Digos-Makar Road', lat: 6.11911, lng: 125.17880, tags: [] },
+  { name: 'Jollibee, Digos-Makar Road', lat: 6.11854, lng: 125.17887, tags: [] },
+  { name: 'Jollibee, Pendatun Avenue', lat: 6.11265, lng: 125.17032, tags: [] },
+  { name: 'PBA Restaurant, Digos-Makar Road', lat: 6.11907, lng: 125.17258, tags: [] },
+  { name: 'Dunkin Donuts, Digos-Makar Road', lat: 6.11901, lng: 125.17276, tags: [] },
+  { name: 'Hinatuan, Surigao del Sur, Caraga, 8310, Philippines', lat: 8.52127, lng: 126.51306, tags: [] },
+  { name: 'Jollibee, Hadano Avenue', lat: 6.11877, lng: 125.14512, tags: [] },
+  { name: 'McDonalds, Jose Catolico Sr. Avenue', lat: 6.12625, lng: 125.19532, tags: [] },
+  { name: 'Jollibee, Jose Catolico Sr. Avenue', lat: 6.12703, lng: 125.19527, tags: [] },
+  { name: 'Starbucks - GenSan Highway', lat: 6.11924, lng: 125.18453, tags: [] },
+  { name: 'Ponti Cafe, Digos-Makar Road', lat: 6.11910, lng: 125.18422, tags: [] },
+  { name: 'Burger King, Digos-Makar Road,', lat: 6.11906, lng: 125.18049, tags: [] },
+  { name: 'Gaisano Supermarket, Digos-Makar Road, Dadiangas East, General Santos, Soccsksargen, 9500, Philippines', lat: 6.11765, lng: 125.18393, tags: [] },
 
   
 
@@ -1360,5 +1390,6 @@ window.addEventListener('resize', () => {
     state.map.invalidateSize();
   }
 });
+
 
 
