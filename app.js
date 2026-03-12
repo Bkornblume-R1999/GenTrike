@@ -310,9 +310,7 @@ const GENSAN_PLACES = [
   { name: 'Starbucks - GenSan Highway', lat: 6.11924, lng: 125.18453, tags: [] },
   { name: 'Ponti Cafe, Digos-Makar Road', lat: 6.11910, lng: 125.18422, tags: [] },
   { name: 'Burger King, Digos-Makar Road,', lat: 6.11906, lng: 125.18049, tags: [] },
-  { name: 'Gaisano Supermarket, Digos-Makar Road, Dadiangas East, General Santos, Soccsksargen, 9500, Philippines', lat: 6.11765, lng: 125.18393, tags: [] },
-
-  
+  { name: 'Gaisano Supermarket, Digos-Makar Road, Dadiangas East, General Santos, Soccsksargen, 9500, Philippines', lat: 6.11765, lng: 125.18393, tags: [] }
 ];
 // ─── SEARCH HISTORY ────────────────────────────────────────────────────────────
 const MAX_HISTORY = 4;
@@ -1390,6 +1388,7 @@ window.addEventListener('resize', () => {
     state.map.invalidateSize();
   }
 });
+
 
 
 
