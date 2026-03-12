@@ -12,7 +12,8 @@ const state = {
   busjeep: {
     routeControl: null,
     markers: [],
-    selectedRoute: null
+    selectedRoute: null,
+    userMarker: null
   }
 };
 
@@ -1002,12 +1003,15 @@ function showRoute(routeKey) {
   state.busjeep.selectedRoute = routeKey;
 
   route.stops.forEach((coords, idx) => {
+    const isWhite = route.color === '#ffffff';
     const marker = L.circleMarker(coords, {
-      radius: 8,
-      color: route.color === '#ffffff' ? '#000000' : '#ffffff',
-      fillColor: route.color,
-      fillOpacity: route.color === '#ffffff' ? 0.9 : 1,
-      weight: 3
+      radius: 10,
+      color: '#ffffff',
+      fillColor: isWhite ? '#e2e8f0' : route.color,
+      fillOpacity: 1,
+      weight: 3,
+      // Ensure markers render above the dark overlay
+      pane: 'markerPane'
     }).addTo(state.map);
     
     marker.bindTooltip(route.labels[idx], {
@@ -1024,10 +1028,11 @@ function showRoute(routeKey) {
     waypoints,
     lineOptions: {
       styles: [{
-        color: route.color === '#ffffff' ? '#cccccc' : route.color,
-        weight: 5,
-        opacity: route.color === '#ffffff' ? 1 : 0.8
-      }]
+        color: route.color === '#ffffff' ? '#e2e8f0' : route.color,
+        weight: 7,
+        opacity: 1
+      }],
+      addWaypoints: false
     },
     router: L.Routing.osrmv1({
       serviceUrl: 'https://router.project-osrm.org/route/v1'
@@ -1114,13 +1119,18 @@ function switchMode(mode) {
     // Remove map overlay when leaving bus mode
     const overlay = document.getElementById('map-dark-overlay');
     if (overlay) overlay.style.display = 'none';
+    // Remove bus user location marker
+    if (state.busjeep.userMarker) {
+      state.busjeep.userMarker.remove();
+      state.busjeep.userMarker = null;
+    }
   } else {
     // Apply 20% dark overlay on map for bus mode
     let overlay = document.getElementById('map-dark-overlay');
     if (!overlay) {
       overlay = document.createElement('div');
       overlay.id = 'map-dark-overlay';
-      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.22);pointer-events:none;z-index:399;transition:opacity 0.3s;';
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.42);pointer-events:none;z-index:399;transition:opacity 0.3s;';
       document.body.appendChild(overlay);
     }
     overlay.style.display = 'block';
@@ -1165,7 +1175,42 @@ function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
   const isDark = document.body.classList.contains('dark-mode');
   localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
-  showToast(isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled');
+  const lbl = document.getElementById('dark-mode-label');
+  if (lbl) lbl.textContent = isDark ? 'Light' : 'Dark';
+  showToast(isDark ? 'Dark mode enabled' : 'Light mode enabled');
+}
+
+function useBusLocation() {
+  if (!navigator.geolocation) {
+    showToast('Geolocation not supported');
+    return;
+  }
+  showToast('Getting location...');
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { latitude, longitude } = pos.coords;
+      const latlng = L.latLng(latitude, longitude);
+
+      // Remove previous user location marker if any
+      if (state.busjeep.userMarker) {
+        state.busjeep.userMarker.remove();
+      }
+
+      state.busjeep.userMarker = L.circleMarker(latlng, {
+        radius: 10,
+        color: '#ffffff',
+        fillColor: '#2563eb',
+        fillOpacity: 1,
+        weight: 3
+      }).addTo(state.map);
+      state.busjeep.userMarker.bindTooltip('You are here', { permanent: false, direction: 'top' });
+
+      state.map.setView(latlng, 15);
+      showToast('Location found');
+    },
+    () => showToast('Could not get location'),
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
 }
 
 function initMatrixTabs() {
@@ -1390,104 +1435,11 @@ function initEventListeners() {
     showToast('Route cleared');
   });
 
-  // ── Nearest Place Feature ────────────────────────────────────────────────────
-  const NEAREST_CATEGORIES = [
-    { label: 'All', tag: null },
-    { label: 'Malls', tag: 'mall' },
-    { label: 'Hospitals', tag: 'Hospital' },
-    { label: 'Schools', tag: 'School' },
-    { label: 'Markets', tag: 'Market' },
-    { label: 'Hotels', tag: 'Hotel' },
-    { label: 'Transport', tag: 'Bus' },
-    { label: 'Restaurants', tag: 'restaurant' },
-    { label: 'Parks', tag: 'Park' },
-    { label: 'Government', tag: 'Government' },
-  ];
-
-  let nearestActiveCat = null;
-
-  function renderNearestCategories() {
-    const catEl = document.getElementById('nearest-categories');
-    catEl.innerHTML = NEAREST_CATEGORIES.map(c => `
-      <button class="nearest-cat-btn${nearestActiveCat === c.tag ? ' active' : ''}" data-tag="${c.tag || ''}">
-        ${c.label}
-      </button>
-    `).join('');
-    catEl.querySelectorAll('.nearest-cat-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        nearestActiveCat = btn.dataset.tag || null;
-        renderNearestCategories();
-        renderNearestResults();
-      });
-    });
+  // Bus mode: My Location button
+  const useBusLocBtn = document.getElementById('use-location-bus');
+  if (useBusLocBtn) {
+    useBusLocBtn.addEventListener('click', useBusLocation);
   }
-
-  function renderNearestResults() {
-    const resultsEl = document.getElementById('nearest-results');
-    let places = GENSAN_PLACES;
-    if (nearestActiveCat) {
-      places = GENSAN_PLACES.filter(p =>
-        p.tags.some(t => t.toLowerCase() === nearestActiveCat.toLowerCase())
-      );
-    }
-    // If user location available, sort by distance
-    const userLoc = state.trike.startMarker ? state.trike.startMarker.getLatLng() : null;
-    if (userLoc) {
-      places = [...places].sort((a, b) => {
-        const dA = Math.hypot(a.lat - userLoc.lat, a.lng - userLoc.lng);
-        const dB = Math.hypot(b.lat - userLoc.lat, b.lng - userLoc.lng);
-        return dA - dB;
-      });
-    }
-    places = places.slice(0, 30);
-
-    if (places.length === 0) {
-      resultsEl.innerHTML = '<div style="padding:14px;text-align:center;font-size:13px;color:#737373;">No places found</div>';
-      return;
-    }
-
-    resultsEl.innerHTML = places.map(p => `
-      <div class="nearest-result-item" data-name="${p.name}" data-lat="${p.lat}" data-lng="${p.lng}">
-        <div class="nearest-result-dot"></div>
-        <span>${p.name}</span>
-      </div>
-    `).join('');
-
-    resultsEl.querySelectorAll('.nearest-result-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const place = { name: item.dataset.name, lat: parseFloat(item.dataset.lat), lng: parseFloat(item.dataset.lng) };
-        selectEndPlace(place);
-        document.getElementById('nearest-panel').style.display = 'none';
-        const endLbl = document.getElementById('end-display');
-        if (endLbl) { endLbl.textContent = place.name; endLbl.classList.remove('is-placeholder'); }
-      });
-    });
-  }
-
-  const nearestBtn = document.getElementById('nearest-place-btn');
-  const nearestPanel = document.getElementById('nearest-panel');
-  const nearestCloseBtn = document.getElementById('nearest-close');
-
-  nearestBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isVisible = nearestPanel.style.display !== 'none';
-    nearestPanel.style.display = isVisible ? 'none' : 'block';
-    if (!isVisible) {
-      nearestActiveCat = null;
-      renderNearestCategories();
-      renderNearestResults();
-    }
-  });
-
-  nearestCloseBtn.addEventListener('click', () => {
-    nearestPanel.style.display = 'none';
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!nearestPanel.contains(e.target) && e.target !== nearestBtn) {
-      nearestPanel.style.display = 'none';
-    }
-  });
 }
 
 function init() {
@@ -1506,6 +1458,8 @@ function init() {
   const darkMode = localStorage.getItem('darkMode');
   if (darkMode === 'enabled') {
     document.body.classList.add('dark-mode');
+    const lbl = document.getElementById('dark-mode-label');
+    if (lbl) lbl.textContent = 'Light';
   }
   
   setTimeout(() => {
