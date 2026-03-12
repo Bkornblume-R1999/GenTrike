@@ -194,12 +194,12 @@ function createMarkerIcon(label, color) {
 // ─── GENSAN KEY PLACES DATABASE ───────────────────────────────────────────────
 const GENSAN_PLACES = [
   // Malls & Commercial
-  { name: 'SM Mall of GenSan', lat: 6.11615, lng: 125.18107, tags: ['mall', 'shopping', 'arcade', 'restuarants'] },
-  { name: 'KCC Mall of GenSan', lat: 6.11605, lng: 125.18691, tags: ['mall', 'shopping', 'arcade', 'restuarants'] },
-  { name: 'Robinsons Mall of GenSan', lat: 6.12099, lng: 125.19069, tags: ['mall', 'shopping', 'arcade', 'restuarants'] },
-  { name: 'Gaisano Mall of GenSan', lat: 6.11727, lng: 125.18437, tags: ['mall', 'shopping', 'restuarants'] },
+  { name: 'SM Mall of GenSan', lat: 6.11615, lng: 125.18107, tags: ['mall', 'shopping', 'arcade', 'restaurants'] },
+  { name: 'KCC Mall of GenSan', lat: 6.11605, lng: 125.18691, tags: ['mall', 'shopping', 'arcade', 'restaurants'] },
+  { name: 'Robinsons Mall of GenSan', lat: 6.12099, lng: 125.19069, tags: ['mall', 'shopping', 'arcade', 'restaurants'] },
+  { name: 'Gaisano Mall of GenSan', lat: 6.11727, lng: 125.18437, tags: ['mall', 'shopping', 'restaurants'] },
   { name: 'Fit Mart Mall of GenSan', lat: 6.11237, lng: 125.16923, tags: ['mall', 'shopping'] },
-  { name: 'Veranza Mall', lat: 6.11600, lng: 125.18852, tags: ['mall', 'arcade', 'resturants'] },
+  { name: 'Veranza Mall', lat: 6.11600, lng: 125.18852, tags: ['mall', 'arcade', 'restaurants'] },
   // Hospitals
   { name: 'St.Elizabeth Hospital', lat: 6.11821, lng: 125.17995, tags: ['Hospital', 'Clinic'] },
   { name: 'GenSan Doctors Hospital', lat: 6.12011, lng: 125.17839, tags: ['Hospital', 'Clinic'] },
@@ -229,7 +229,7 @@ const GENSAN_PLACES = [
   { name: 'Lagao National High School – Annex', lat: 6.14475, lng: 125.18569, tags: ['School'] },
   { name: 'STI College, GenSan', lat: 6.11471, lng: 125.18297, tags: ['School'] },
   { name: 'Stratford International School', lat: 6.11359, lng: 125.18419, tags: ['School'] },
-  { name: 'Notre Dame of Dadiangas University', lat: 6.11748, lng: 125.17165, tags: ['NDDU', 'Unversity'] },
+  { name: 'Notre Dame of Dadiangas University', lat: 6.11748, lng: 125.17165, tags: ['NDDU', 'University'] },
   { name: 'Mindanao State University - General Santos', lat: 6.11652, lng: 125.17171, tags: ['MSU', 'University'] },
   { name: 'RMMC School', lat: 6.11175, lng: 125.17388, tags: ['Ramon', 'School'] },
   { name: 'Goldenstate College, Acharon Boulevard', lat: 6.10716, lng: 125.17251, tags: ['GLC', 'School'] },
@@ -296,22 +296,22 @@ const GENSAN_PLACES = [
   { name: 'Matutum Hotel & Restaurant', lat: 6.10709, lng: 125.17347, tags: ['Hotel', 'Restaurant'] },
   { name: 'Roadhaus hotel', lat: 6.12249, lng: 125.17192, tags: ['Hotel'] },
   // Restaurant
-  { name: 'McDonalds, Digos-Makar Road', lat: 6.11912, lng: 125.17981, tags: [] },
-  { name: 'Chowking, Digos-Makar Road', lat: 6.11909, lng: 125.17925, tags: [] },
-  { name: 'Mang Inasal, Digos-Makar Road', lat: 6.11911, lng: 125.17880, tags: [] },
-  { name: 'Jollibee, Digos-Makar Road', lat: 6.11854, lng: 125.17887, tags: [] },
-  { name: 'Jollibee, Pendatun Avenue', lat: 6.11265, lng: 125.17032, tags: [] },
-  { name: 'PBA Restaurant, Digos-Makar Road', lat: 6.11907, lng: 125.17258, tags: [] },
-  { name: 'Dunkin Donuts, Digos-Makar Road', lat: 6.11901, lng: 125.17276, tags: [] },
-  { name: 'Hinatuan, Surigao del Sur, Caraga, 8310, Philippines', lat: 8.52127, lng: 126.51306, tags: [] },
-  { name: 'Jollibee, Hadano Avenue', lat: 6.11877, lng: 125.14512, tags: [] },
-  { name: 'McDonalds, Jose Catolico Sr. Avenue', lat: 6.12625, lng: 125.19532, tags: [] },
-  { name: 'Jollibee, Jose Catolico Sr. Avenue', lat: 6.12703, lng: 125.19527, tags: [] },
-  { name: 'Starbucks - GenSan Highway', lat: 6.11924, lng: 125.18453, tags: [] },
-  { name: 'Ponti Cafe, Digos-Makar Road', lat: 6.11910, lng: 125.18422, tags: [] },
-  { name: 'Burger King, Digos-Makar Road,', lat: 6.11906, lng: 125.18049, tags: [] },
-  { name: 'Gaisano Supermarket, Digos-Makar Road, Dadiangas East, General Santos, Soccsksargen, 9500, Philippines', lat: 6.11765, lng: 125.18393, tags: [] }
+  { name: 'McDonalds, Digos-Makar Road', lat: 6.11912, lng: 125.17981, tags: ['restaurant', 'fastfood'] },
+  { name: 'Chowking, Digos-Makar Road', lat: 6.11909, lng: 125.17925, tags: ['restaurant', 'fastfood'] },
+  { name: 'Mang Inasal, Digos-Makar Road', lat: 6.11911, lng: 125.17880, tags: ['restaurant', 'fastfood'] },
+  { name: 'Jollibee, Digos-Makar Road', lat: 6.11854, lng: 125.17887, tags: ['restaurant', 'fastfood'] },
+  { name: 'Jollibee, Pendatun Avenue', lat: 6.11265, lng: 125.17032, tags: ['restaurant', 'fastfood'] },
+  { name: 'PBA Restaurant, Digos-Makar Road', lat: 6.11907, lng: 125.17258, tags: ['restaurant'] },
+  { name: 'Dunkin Donuts, Digos-Makar Road', lat: 6.11901, lng: 125.17276, tags: ['restaurant', 'cafe', 'donuts'] },
+  { name: 'Jollibee, Hadano Avenue', lat: 6.11877, lng: 125.14512, tags: ['restaurant', 'fastfood'] },
+  { name: 'McDonalds, Jose Catolico Sr. Avenue', lat: 6.12625, lng: 125.19532, tags: ['restaurant', 'fastfood'] },
+  { name: 'Jollibee, Jose Catolico Sr. Avenue', lat: 6.12703, lng: 125.19527, tags: ['restaurant', 'fastfood'] },
+  { name: 'Starbucks - GenSan Highway', lat: 6.11924, lng: 125.18453, tags: ['restaurant', 'cafe', 'coffee'] },
+  { name: 'Ponti Cafe, Digos-Makar Road', lat: 6.11910, lng: 125.18422, tags: ['restaurant', 'cafe'] },
+  { name: 'Burger King, Digos-Makar Road', lat: 6.11906, lng: 125.18049, tags: ['restaurant', 'fastfood'] },
+  { name: 'Gaisano Supermarket, Digos-Makar Road', lat: 6.11765, lng: 125.18393, tags: ['market', 'supermarket'] },
 ];
+
 // ─── SEARCH HISTORY ────────────────────────────────────────────────────────────
 const MAX_HISTORY = 4;
 
@@ -952,7 +952,7 @@ function displayFare(fareData) {
     regularFareEl.textContent = `₱${fareData.baseFare}`;
     discountAmountEl.textContent = `-₱${fareData.discountAmount}`;
     discountLabelEl.textContent = 'Special Discount (20%)';
-    fareFormulaEl.textContent = '₱12 base (4km) + ₱0.80/km (with discount)';
+    fareFormulaEl.textContent = '₱15 base (4km) + ₱1/km, minus 20% discount';
   } else {
     fareBreakdown.style.display = 'none';
     fareFormulaEl.textContent = '₱15 base (4km) + ₱1/km';
@@ -1388,8 +1388,6 @@ window.addEventListener('resize', () => {
     state.map.invalidateSize();
   }
 });
-
-
 
 
 
