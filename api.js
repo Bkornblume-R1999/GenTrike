@@ -10,7 +10,7 @@ export const Api = {
       baseFare = rounded <= 4 ? 15 : 15 + Math.ceil(rounded - 4) * 1;
     } else if (mode === 'bus' || mode === 'jeep') {
       // Variable fare for bus/jeep rides inside GenSan
-      baseFare = 20; // Minimum fare
+      baseFare = 30; // Minimum fare
     } else {
       throw new Error('Unsupported mode');
     }
