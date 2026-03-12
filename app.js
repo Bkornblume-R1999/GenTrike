@@ -313,7 +313,7 @@ const GENSAN_PLACES = [
   { name: 'Gaisano Supermarket, Digos-Makar Road, Dadiangas East, General Santos, Soccsksargen, 9500, Philippines', lat: 6.11765, lng: 125.18393, tags: [] },
 
   
-
+];
 // ─── SEARCH HISTORY ────────────────────────────────────────────────────────────
 const MAX_HISTORY = 4;
 
@@ -1390,6 +1390,7 @@ window.addEventListener('resize', () => {
     state.map.invalidateSize();
   }
 });
+
 
 
 
