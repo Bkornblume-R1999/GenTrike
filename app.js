@@ -1016,6 +1016,10 @@ function showRoute(routeKey) {
     show: false
   }).addTo(state.map);
 
+  // Zoom in on the route bounds
+  const bounds = L.latLngBounds(waypoints);
+  state.map.flyToBounds(bounds, { padding: [40, 40], duration: 1.2 });
+
   showRouteDetail(route);
   showToast(`🚌 ${route.name} selected`);
 }
@@ -1316,12 +1320,15 @@ function initEventListeners() {
 
   document.querySelectorAll('.route-card').forEach(card => {
     card.addEventListener('click', () => {
+      document.querySelectorAll('.route-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
       showRoute(card.dataset.route);
     });
   });
 
   document.getElementById('clear-route').addEventListener('click', () => {
     clearBusJeepRoute();
+    document.querySelectorAll('.route-card').forEach(c => c.classList.remove('selected'));
     showToast('Route cleared');
   });
 }
