@@ -189,7 +189,7 @@
 <!-- ── LOGIN ── -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="login-logo">🛡️</div>
+    <div class="login-logo" style="font-size:32px;font-weight:900;color:#2563eb;letter-spacing:-1px;">GG</div>
     <div class="login-title">Admin Panel</div>
     <div class="login-subtitle">Geo GenSan • Tricycle Reports</div>
     <label class="login-label" for="login-input">Password</label>
@@ -203,10 +203,9 @@
 <div id="admin-screen">
   <div class="topbar">
     <div class="topbar-left">
-      <span class="topbar-title">🛡️ Admin Panel</span>
+      <span class="topbar-title">Admin Panel</span>
     </div>
     <div class="topbar-right">
-      <span class="live-dot">Live</span>
       <button class="logout-btn" id="logout-btn">Logout</button>
     </div>
   </div>
@@ -216,10 +215,6 @@
       <div class="stat-card">
         <div class="stat-label">Total Reports</div>
         <div class="stat-value" id="stat-total">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Most Reported</div>
-        <div class="stat-value" id="stat-top" style="font-size:14px;padding-top:8px;">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Last Report</div>
@@ -301,7 +296,7 @@
 
   // ── Type helpers ──────────────────────────────────────────────────────────
   const TYPE_CLASSES = { 'Overcharging':'overcharging','Reckless Driving':'reckless','Refusal of Service':'refusal','Verbal Abuse':'verbal','Unsafe Vehicle':'unsafe','Other':'other' };
-  const TYPE_ICONS   = { 'Overcharging':'💸','Reckless Driving':'🚗','Refusal of Service':'🚫','Verbal Abuse':'🗣️','Unsafe Vehicle':'⚠️','Other':'📋' };
+  const TYPE_ICONS   = { 'Overcharging':'','Reckless Driving':'','Refusal of Service':'','Verbal Abuse':'','Unsafe Vehicle':'','Other':'' };
 
   // ── Firebase delete ───────────────────────────────────────────────────────
   async function fbDelete(key) {
@@ -315,7 +310,7 @@
       await fbDelete(key);
       allReports = allReports.filter(r => r._key !== key);
       renderTable(document.getElementById('filter-type')?.value || '');
-      showToast('🗑️ Report deleted');
+      showToast('Report deleted');
     } catch (err) {
       console.error('Delete error:', err);
       showToast('❌ Failed to delete report');
@@ -328,19 +323,13 @@
   function renderTable(filterType = '') {
     const tbody     = document.getElementById('reports-tbody');
     const statTotal = document.getElementById('stat-total');
-    const statTop   = document.getElementById('stat-top');
     const statLast  = document.getElementById('stat-last');
 
     statTotal.textContent = allReports.length;
 
     if (allReports.length > 0) {
-      const counts = {};
-      allReports.forEach(r => { counts[r.type] = (counts[r.type] || 0) + 1; });
-      const topType = Object.entries(counts).sort((a,b) => b[1]-a[1])[0];
-      statTop.textContent = topType ? topType[0] : '—';
       statLast.textContent = allReports[0]?.date?.split(',')[0] || '—';
     } else {
-      statTop.textContent = '—';
       statLast.textContent = '—';
     }
 
@@ -364,7 +353,7 @@
         <td class="col-date">${escapeHtml(r.date || '—')}</td>
         <td><span class="type-badge ${cls}">${icon} ${escapeHtml(r.type)}</span></td>
         <td class="col-desc">${escapeHtml(r.description)}</td>
-        <td class="col-action"><button class="delete-btn" data-key="${escapeHtml(r._key)}" title="Delete report">🗑️</button></td>
+        <td class="col-action"><button class="delete-btn" data-key="${escapeHtml(r._key)}" title="Delete report">&#x2715;</button></td>
       </tr>`;
     }).join('');
 
@@ -390,7 +379,7 @@
 
       // Detect new reports (for flash animation) after first load
       if (!isFirstLoad && fresh.length > allReports.length) {
-        showToast('🔔 New report received!');
+        showToast('New report received!');
       }
       isFirstLoad = false;
       allReports  = fresh;
