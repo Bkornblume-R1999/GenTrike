@@ -936,6 +936,25 @@ body.dark-mode .toggle-icon::before {
   cursor: pointer;
   transition: all var(--transition);
   text-align: left;
+  position: relative;
+}
+
+.route-card::after {
+  content: '🔍';
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.route-card:hover::after { opacity: 0.6; }
+
+.route-card.selected {
+  border-color: var(--primary);
+  background: #eff6ff;
+  box-shadow: var(--shadow-md);
 }
 
 .route-card:hover {
