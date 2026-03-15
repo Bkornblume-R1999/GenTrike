@@ -815,7 +815,21 @@ function initMap() {
     maxZoom: 19,
     attribution: '© OpenStreetMap'
   }).addTo(map);
-  
+
+  // Custom pane for the dark overlay - sits between tile layer and route lines
+  map.createPane('darkOverlayPane');
+  map.getPane('darkOverlayPane').style.zIndex = 250;
+  map.getPane('darkOverlayPane').style.pointerEvents = 'none';
+
+  // Custom pane for bus route lines - above the dark overlay
+  map.createPane('busRoutePane');
+  map.getPane('busRoutePane').style.zIndex = 420;
+  map.getPane('busRoutePane').style.pointerEvents = 'none';
+
+  // Custom pane for bus stop markers - above route lines
+  map.createPane('busMarkerPane');
+  map.getPane('busMarkerPane').style.zIndex = 440;
+
   state.map = map;
   map.on('click', handleMapClick);
   setTimeout(() => map.invalidateSize(), 100);
@@ -1004,15 +1018,22 @@ function showRoute(routeKey) {
 
   route.stops.forEach((coords, idx) => {
     const isWhite = route.color === '#ffffff';
+    const glowColor = isWhite ? '#e2e8f0' : route.color;
     const marker = L.circleMarker(coords, {
       radius: 10,
       color: '#ffffff',
-      fillColor: isWhite ? '#e2e8f0' : route.color,
+      fillColor: glowColor,
       fillOpacity: 1,
       weight: 3,
-      // Ensure markers render above the dark overlay
-      pane: 'markerPane'
+      className: 'bus-stop-marker',
+      pane: 'busMarkerPane'
     }).addTo(state.map);
+
+    // Apply inline glow via SVG filter on the marker element after it's added
+    marker.on('add', () => {
+      const el = marker.getElement();
+      if (el) el.style.filter = `drop-shadow(0 0 6px ${glowColor}) drop-shadow(0 0 12px ${glowColor}80)`;
+    });
     
     marker.bindTooltip(route.labels[idx], {
       permanent: false,
@@ -1027,11 +1048,11 @@ function showRoute(routeKey) {
   state.busjeep.routeControl = L.Routing.control({
     waypoints,
     lineOptions: {
-      styles: [{
-        color: route.color === '#ffffff' ? '#e2e8f0' : route.color,
-        weight: 7,
-        opacity: 1
-      }],
+      styles: [
+        { color: route.color === '#ffffff' ? '#e2e8f0' : route.color, weight: 18, opacity: 0.18 },
+        { color: route.color === '#ffffff' ? '#e2e8f0' : route.color, weight: 11, opacity: 0.35 },
+        { color: route.color === '#ffffff' ? '#f1f5f9' : route.color, weight: 5,  opacity: 1   }
+      ],
       addWaypoints: false
     },
     router: L.Routing.osrmv1({
@@ -1043,6 +1064,28 @@ function showRoute(routeKey) {
     fitSelectedRoutes: true,
     show: false
   }).addTo(state.map);
+
+  // After route is drawn, move all its SVG paths into busRoutePane (above dark overlay)
+  state.busjeep.routeControl.on('routesfound', () => {
+    const routePane = state.map.getPane('busRoutePane');
+    if (!routePane) return;
+    // Give Leaflet a tick to render the paths
+    setTimeout(() => {
+      const overlayPane = state.map.getPanes().overlayPane;
+      if (!overlayPane) return;
+      // Move every path in overlayPane that belongs to the route line into busRoutePane
+      Array.from(overlayPane.querySelectorAll('path')).forEach(path => {
+        routePane.appendChild(path);
+      });
+      // Also move the SVG containers themselves if present
+      Array.from(overlayPane.querySelectorAll('svg')).forEach(svg => {
+        svg.style.position = 'absolute';
+        svg.style.top = '0';
+        svg.style.left = '0';
+        routePane.appendChild(svg);
+      });
+    }, 50);
+  });
 
   // Zoom in on the route bounds
   const bounds = L.latLngBounds(waypoints);
@@ -1125,13 +1168,14 @@ function switchMode(mode) {
       state.busjeep.userMarker = null;
     }
   } else {
-    // Apply 20% dark overlay on map for bus mode
+    // Inject dark overlay into Leaflet's custom pane so routes sit above it
+    const pane = state.map.getPane('darkOverlayPane');
     let overlay = document.getElementById('map-dark-overlay');
     if (!overlay) {
       overlay = document.createElement('div');
       overlay.id = 'map-dark-overlay';
-      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.42);pointer-events:none;z-index:399;transition:opacity 0.3s;';
-      document.body.appendChild(overlay);
+      overlay.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;background:rgba(0,0,0,0.52);pointer-events:none;transition:opacity 0.3s;';
+      pane.appendChild(overlay);
     }
     overlay.style.display = 'block';
 
@@ -1177,7 +1221,7 @@ function toggleDarkMode() {
   localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
   const lbl = document.getElementById('dark-mode-label');
   if (lbl) lbl.textContent = isDark ? 'Light' : 'Dark';
-  showToast(isDark ? 'Dark mode enabled' : 'Light mode enabled');
+  showToast(isDark ? 'Dark mode on' : 'Light mode on');
 }
 
 function useBusLocation() {
@@ -1474,6 +1518,7 @@ window.addEventListener('resize', () => {
     state.map.invalidateSize();
   }
 });
+
 
 
 
