@@ -1065,26 +1065,26 @@ function showRoute(routeKey) {
     show: false
   }).addTo(state.map);
 
-  // After route is drawn, move all its SVG paths into busRoutePane (above dark overlay)
+  // After route is drawn, move its SVG container into busRoutePane (z-index 420, above dark overlay at 300)
   state.busjeep.routeControl.on('routesfound', () => {
     const routePane = state.map.getPane('busRoutePane');
     if (!routePane) return;
-    // Give Leaflet a tick to render the paths
     setTimeout(() => {
       const overlayPane = state.map.getPanes().overlayPane;
       if (!overlayPane) return;
-      // Move every path in overlayPane that belongs to the route line into busRoutePane
-      Array.from(overlayPane.querySelectorAll('path')).forEach(path => {
-        routePane.appendChild(path);
+      // Move all SVG elements from overlayPane into busRoutePane
+      // (Leaflet renders route polylines as SVG inside overlayPane)
+      Array.from(overlayPane.children).forEach(child => {
+        if (child.tagName === 'svg' || child.tagName === 'SVG') {
+          child.style.position = 'absolute';
+          child.style.top = '0';
+          child.style.left = '0';
+          child.style.width = '100%';
+          child.style.height = '100%';
+          routePane.appendChild(child);
+        }
       });
-      // Also move the SVG containers themselves if present
-      Array.from(overlayPane.querySelectorAll('svg')).forEach(svg => {
-        svg.style.position = 'absolute';
-        svg.style.top = '0';
-        svg.style.left = '0';
-        routePane.appendChild(svg);
-      });
-    }, 50);
+    }, 80);
   });
 
   // Zoom in on the route bounds
@@ -1168,14 +1168,22 @@ function switchMode(mode) {
       state.busjeep.userMarker = null;
     }
   } else {
-    // Inject dark overlay into Leaflet's custom pane so routes sit above it
-    const pane = state.map.getPane('darkOverlayPane');
+    // Place dark overlay directly inside #map so it's in the same stacking context as Leaflet panes.
+    // z-index 300 = above tiles (200) but below Leaflet's overlayPane (400) and markerPane (600).
     let overlay = document.getElementById('map-dark-overlay');
     if (!overlay) {
       overlay = document.createElement('div');
       overlay.id = 'map-dark-overlay';
-      overlay.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;background:rgba(0,0,0,0.52);pointer-events:none;transition:opacity 0.3s;';
-      pane.appendChild(overlay);
+      overlay.style.cssText = [
+        'position:absolute',
+        'top:0', 'left:0', 'right:0', 'bottom:0',
+        'width:100%', 'height:100%',
+        'background:rgba(0,0,0,0.55)',
+        'pointer-events:none',
+        'z-index:300',
+        'transition:opacity 0.3s'
+      ].join(';');
+      document.getElementById('map').appendChild(overlay);
     }
     overlay.style.display = 'block';
 
@@ -1518,8 +1526,3 @@ window.addEventListener('resize', () => {
     state.map.invalidateSize();
   }
 });
-
-
-
-
-
